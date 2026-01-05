@@ -417,28 +417,32 @@
         .all-spots-grid {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 20px;
             padding: 10px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        /* 全部景點卡片的水平佈局 */
+        /* 全部景點卡片水平排列（左圖右文） */
         .all-spots-grid .rec-card {
             flex-direction: row;
             display: flex;
             align-items: stretch;
+            flex: 0 0 100%;
             height: auto;
         }
 
         .all-spots-grid .rec-img-wrapper {
             width: 35%;
             min-width: 280px;
-            height: auto;
-            min-height: 220px;
+            height: 220px;
             flex-shrink: 0;
         }
 
         .all-spots-grid .rec-img-wrapper img {
+            width: 100%;
             height: 100%;
+            object-fit: cover;
         }
 
         .all-spots-grid .rec-overlay-title {
@@ -556,14 +560,8 @@
             .recommend-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .all-spots-grid .rec-card {
-                flex-direction: row;
-            }
-            .all-spots-grid .rec-img-wrapper {
-                width: 40%;
-            }
-            .all-spots-grid .rec-content {
-                width: 60%;
+            .all-spots-grid {
+                max-width: 100%;
             }
         }
 
@@ -587,9 +585,6 @@
             .all-spots-grid .rec-content {
                 width: 100%;
                 padding: 20px;
-            }
-            .all-spots-grid .rec-card h3 {
-                font-size: 1.1rem;
             }
             /* 輪盤手機版調整 */
             .roulette-container { width: 280px; height: 280px; }
@@ -625,7 +620,7 @@
         <a href="#" onclick="navigateTo('page-home')"><i class="fas fa-home"></i> 首頁</a>
         <a href="#" onclick="navigateTo('page-intro')"><i class="fas fa-book-reader"></i> 六腳簡介</a>
         
-        <a href="#" onclick="toggleSubmenu()"><i class="fas fa-map-marked-alt"></i> 景點列表<i class="fas fa-chevron-down" style="margin-left: 5px;"></i></a>
+        <a href="#" onclick="toggleSubmenu()"><i class="fas fa-map-marked-alt"></i> 景點列表 <i class="fas fa-chevron-down" style="float:right; font-size: 0.8em;"></i></a>
         <div id="submenu" class="submenu">
             <a href="#" onclick="navigateToSpot('蒜頭糖廠', './assets/sugar00.jpg')">蒜頭糖廠</a>
             <a href="#" onclick="navigateToSpot('用九柑仔店', './assets/yon9.png')">用九柑仔店</a>
@@ -723,62 +718,13 @@
                     <h2>六腳攻略</h2>
                     <div class="all-spots-grid">
                         
-                        <div class="rec-card" onclick="navigateToSpot('興旺餅舖', './assets/xwbp00.jpg')">
+                        <div class="rec-card" onclick="navigateToSpot('在地炭烤美味', './assets/T1.jpg')">
                             <div class="rec-img-wrapper">
-                                <img src="./assets/xwbp00.jpg" alt="興旺餅舖">
-                                <div class="rec-overlay-title">興旺餅舖</div>
+                                <img src="./assets/T1.jpg" alt="在地炭烤美味">
+                                <div class="rec-overlay-title">在地炭烤美味</div>
                             </div>
                             <div class="rec-content">
-                                <h3>興旺餅舖</h3>
-                                <p class="rec-desc">品嚐傳統糕餅的美味，感受老師傅的手工溫度，外皮酥香內餡軟糯的蒜頭餅...</p>
-                                <span class="rec-btn">探索更多</span>
-                            </div>
-                        </div>
-
-                        <div class="rec-card" onclick="navigateToSpot('木精靈豆花', './assets/tofup00.jpg')">
-                            <div class="rec-img-wrapper">
-                                <img src="./assets/tofup00.jpg" alt="木精靈豆花">
-                                <div class="rec-overlay-title">木精靈豆花</div>
-                            </div>
-                            <div class="rec-content">
-                                <h3>木精靈豆花</h3>
-                                <p class="rec-desc">享受清涼消暑的古早味豆花，真材實料的堅持，綿密細緻的豆香滋味...</p>
-                                <span class="rec-btn">探索更多</span>
-                            </div>
-                        </div>
-
-                        <div class="rec-card" onclick="navigateToSpot('配天宮', './assets/ptg00.jpg')">
-                            <div class="rec-img-wrapper">
-                                <img src="./assets/ptg00.jpg" alt="配天宮">
-                                <div class="rec-overlay-title">配天宮</div>
-                            </div>
-                            <div class="rec-content">
-                                <h3>配天宮</h3>
-                                <p class="rec-desc">糖廠內的信仰中心，見證台灣近代產業史，淡淡甘蔗甜香中的靜謐莊嚴...</p>
-                                <span class="rec-btn">探索更多</span>
-                            </div>
-                        </div>
-
-                        <div class="rec-card" onclick="navigateToSpot('蒜頭糖廠', './assets/sugar00.jpg')">
-                            <div class="rec-img-wrapper">
-                                <img src="./assets/sugar00.jpg" alt="蒜頭糖廠">
-                                <div class="rec-overlay-title">蒜頭糖廠</div>
-                            </div>
-                            <div class="rec-content">
-                                <h3>蒜頭糖廠</h3>
-                                <p class="rec-desc">品嘗古早味冰棒，搭乘五分車重溫糖業歷史，日式木造建築群的樹蔭下享受午後...</p>
-                                <span class="rec-btn">探索更多</span>
-                            </div>
-                        </div>
-
-                        <div class="rec-card" onclick="navigateToSpot('用九柑仔店', './assets/yon9.png')">
-                            <div class="rec-img-wrapper">
-                                <img src="./assets/yon9.png" alt="用九柑仔店">
-                                <div class="rec-overlay-title">用九柑仔店</div>
-                            </div>
-                            <div class="rec-content">
-                                <h3>用九柑仔店</h3>
-                                <p class="rec-desc">百年老建築，懷舊復古的古早味雜貨店，琳瑯滿目的傳統零食喚醒兒時回憶...</p>
+                                <p class="rec-desc">炭火慢烤香腸，外皮微焦、肉香四溢...</p>
                                 <span class="rec-btn">探索更多</span>
                             </div>
                         </div>
@@ -789,8 +735,29 @@
                                 <div class="rec-overlay-title">古早味烤玉米</div>
                             </div>
                             <div class="rec-content">
-                                <h3>古早味烤玉米</h3>
-                                <p class="rec-desc">經過炭火慢烤，香味四溢，讓人停下腳步，配上獨門醬汁的美味秘訣...</p>
+                                <p class="rec-desc">經過炭火慢烤，香味四溢，讓人停下腳步...</p>
+                                <span class="rec-btn">探索更多</span>
+                            </div>
+                        </div>
+
+                        <div class="rec-card" onclick="navigateToSpot('六家佃長壽橋', './assets/T3.jpg')">
+                            <div class="rec-img-wrapper">
+                                <img src="./assets/T3.jpg" alt="六家佃長壽橋">
+                                <div class="rec-overlay-title">六家佃長壽橋</div>
+                            </div>
+                            <div class="rec-content">
+                                <p class="rec-desc">結合生活風景與地方情感的景點，串連糖廠...</p>
+                                <span class="rec-btn">探索更多</span>
+                            </div>
+                        </div>
+
+                        <div class="rec-card" onclick="navigateToSpot('朴子溪黃花風鈴木', './assets/T2.jpg')">
+                            <div class="rec-img-wrapper">
+                                <img src="./assets/T2.jpg" alt="朴子溪黃花風鈴木">
+                                <div class="rec-overlay-title">朴子溪黃花風鈴木</div>
+                            </div>
+                            <div class="rec-content">
+                                <p class="rec-desc">春季限定金黃風景，漫步於溪畔賞花步道...</p>
                                 <span class="rec-btn">探索更多</span>
                             </div>
                         </div>
