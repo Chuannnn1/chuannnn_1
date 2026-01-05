@@ -380,16 +380,24 @@
             const bgSlider = document.getElementById('bg-slider');
             const img = new Image();
             img.onload = () => {
-                bgSlider.style.backgroundImage = `url('${slides[current].img}')`;
-                if (slides[current].title === '興旺餅舖') {
-                    bgSlider.style.backgroundPosition = '60% center';
-                } else {
-                    bgSlider.style.backgroundPosition = 'center';
-                }
-                if(document.getElementById('page-home').style.display !== 'none'){
-                    document.getElementById('home-title').innerText = slides[current].title;
-                    document.getElementById('home-desc').innerText = slides[current].desc;
-                }
+                // 模糊動畫
+                bgSlider.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    bgSlider.style.backgroundImage = `url('${slides[current].img}')`;
+                    if (slides[current].title === '興旺餅舖') {
+                        bgSlider.style.backgroundPosition = '60% center';
+                    } else {
+                        bgSlider.style.backgroundPosition = 'center';
+                    }
+                    // 清除模糊
+                    bgSlider.classList.remove('fade-out');
+                    
+                    if(document.getElementById('page-home').style.display !== 'none'){
+                        document.getElementById('home-title').innerText = slides[current].title;
+                        document.getElementById('home-desc').innerText = slides[current].desc;
+                    }
+                }, 300);
             };
             img.src = slides[current].img;
         }
