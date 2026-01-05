@@ -40,7 +40,7 @@
         <a href="#" onclick="navigateTo('page-home')"><i class="fas fa-home"></i> 首頁</a>
         <a href="#" onclick="navigateTo('page-intro')"><i class="fas fa-book-reader"></i> 六腳簡介</a>
         
-        <a href="#" onclick="toggleSubmenu()"><i class="fas fa-map-marked-alt"></i> 景點列表<i class="fas fa-chevron-down" style="margin-left: 5px;"></i></a>
+        <a href="#" onclick="toggleSubmenu()"><i class="fas fa-map-marked-alt"></i> 參訪列表<i class="fas fa-chevron-down" style="margin-left: 5px;"></i></a>
         <div id="submenu" class="submenu">
             <a href="#" onclick="navigateToSpot('蒜頭糖廠', './assets/sugar00.jpg')">蒜頭糖廠</a>
             <a href="#" onclick="navigateToSpot('用九柑仔店', './assets/yon9.png')">用九柑仔店</a>
@@ -69,7 +69,7 @@
             <div class="content-card">
                 <h1>六腳簡介</h1>
                 <p><strong>六腳鄉</strong>位於嘉義縣西部，是典型的台灣嘉南平原農村。</p>
-                <p>這裡盛產<strong>苦瓜、花生、蘆筍</strong>，其中「蒜頭」更是全台聞名。</p>
+                <p>這裡盛產<strong>苦瓜、花生、蘆筍</strong>。</p>
                 
                 <div id="intro-details"></div>
                 
@@ -146,7 +146,7 @@
                             <div class="rec-content">
                                 <p><strong>30年老店大腸加香腸</strong></p>
                                 <p class="rec-desc">炭火慢烤香腸，外皮微焦、肉香四溢...</p>
-                                <p style="font-size: 0.85rem; color: #999; margin: 8px 0;">📍 嘉義縣六腳鄉188之7號<br>⏰ 週二至週日 13:30~17:30</p>
+                                <p style="font-size: 0.85rem; color: #999; margin: 8px 0;">📍 <a href="https://maps.app.goo.gl/WCune3NbVfT5vZet5" target="_blank" style="color: #999; text-decoration: none;">嘉義縣六腳鄉188之7號</a><br>⏰ 週二至週日 13:30~17:30</p>
                                 <span class="rec-btn">探索更多</span>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                             <div class="rec-content">
                                 <p><strong>下鄉古早味烤香腸烤玉米</strong></p>
                                 <p class="rec-desc">經過炭火慢烤，香味四溢，讓人停下腳步...</p>
-                                <p style="font-size: 0.85rem; color: #999; margin: 8px 0;">📍 嘉義縣六腳鄉蒜頭村94號<br>⏰ 不定時</p>
+                                <p style="font-size: 0.85rem; color: #999; margin: 8px 0;">📍 <a href="https://maps.app.goo.gl/1sPnvknAbUbAdT1XA" target="_blank" style="color: #999; text-decoration: none;">嘉義縣六腳鄉蒜頭村94號</a><br>⏰ 不定時</p>
                                 <span class="rec-btn">探索更多</span>
                             </div>
                         </div>
@@ -214,9 +214,9 @@
 
         <div id="page-spot-detail" class="page-section">
             <div class="content-card">
-                <h1 id="spot-title">景點名稱</h1>
+                <h1 id="spot-title" style="text-align: center;">景點名稱</h1>
                 <div id="spot-images" style="margin: 20px 0; text-align: center;">
-                    <img id="spot-main-img" src="" alt="景點圖片" style="max-width: 100%; height: auto; margin-bottom: 10px; border-radius: 8px;">
+                    <img id="spot-main-img" src="" alt="景點圖片" style="max-width: 100%; max-height: 350px; margin-bottom: 10px; border-radius: 8px;">
                     <div id="spot-gallery" style="display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px;"></div>
                 </div>
                 <p id="spot-desc" style="font-size: 1.05em; line-height: 1.8; color: #5F5F5F; margin-bottom: 20px;">介紹...</p>
