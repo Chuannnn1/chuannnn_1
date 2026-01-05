@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="version" content="2025-01-02-v4-fix-btn">
+    <title>六腳蒜泥厲害 - 探索六腳鄉之美</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* 莫蘭迪配色 */
+            --color-bg: #F2F0EB;
+            --color-primary: #8DA399;
+            --color-accent: #C67C6D;
+            --color-text: #5F5F5F;
+            --color-sidebar: #E6E2D6;
+            --color-hover: #D8D3C5;
+            --sidebar-width: 280px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Serif TC', serif; }
+
+        body {
+            overflow-x: hidden;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            transition: background-color 0.3s;
+        }
+
+        /* --- 自訂滾動條樣式 --- */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: var(--color-sidebar); }
+        .sidebar::-webkit-scrollbar-thumb { background-color: #B5C2BB; border-radius: 10px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background-color: var(--color-primary); }
+
+        /* --- 背景與遮罩 --- */
+        #bg-slider, .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            transition: filter 0.4s ease;
+        }
+        #bg-slider {
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.9);
+        }
+        .overlay {
+            background: rgba(40, 40, 40, 0.2);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 開場動畫 */
+        #intro-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            background-image: url('./assets/yon9.png'); 
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #F2F0EB; 
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            filter: blur(0px); 
+            transition: opacity 2.5s ease-in-out, filter 2.5s ease-in-out, visibility 2.5s;
+        }
+        
+        #intro-layer::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.2); 
+            z-index: -1;
+        }
+        
+        #intro-layer.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; 
+            filter: blur(15px); 
+        }
+
+        .intro-text {
+            color: #fff;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            font-weight: 700;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
+            animation: fadeInOut 2s infinite;
+            z-index: 10;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.6; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-10px); }
+        }
+
+        /* --- 漢堡按鈕 --- */
+        .menu-btn {
+            display: none;
+            position: fixed;
+            top: 25px; left: 25px;
+            width: 60px; height: 60px;
+            background: var(--color-primary);
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            font-size: 26px; /* 稍微調整圖標大小 */
+            cursor: pointer;
+            z-index: 10000;
+            
+            /* [修正] 確保 Flexbox 置中生效 */
+            justify-content: center;
+            align-items: center;
+            padding: 0; /* [修正] 移除瀏覽器預設 padding */
+            line-height: 1; /* [修正] 避免行高影響垂直置中 */
+            
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .menu-btn:hover { background: var(--color-accent); transform: scale(1.05); }
+
+        /* --- 側邊導覽列 --- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100%;
+            background: var(--color-sidebar);
+            transition: left 0.4s ease, box-shadow 0.4s;
+            z-index: 9999;
+            padding-top: 50px;
+            padding-bottom: 60px;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            overflow-y: auto; 
+        }
+
+        /* --- 內容區域容器 --- */
+        #content-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            padding-left: var(--sidebar-width); 
+            transition: filter 0.4s ease, padding-left 0.4s ease;
+        }
+
+        .page-section {
+            display: none;
+            padding: 80px 40px;
+            animation: fadeIn 0.8s;
+        }
+
+        /* [修復關鍵] 針對首頁取消容器動畫，改為內部文字動畫，解決按鈕跳動問題 */
+        #page-home {
+            animation: none !important;
+            /* 保持 flex 佈局 */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            color: #fff; 
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.6); 
+            height: 100vh;
+        }
+
+        /* 文字單獨執行淡入動畫 */
+        #home-title, #home-desc {
+            animation: fadeIn 0.8s;
+        }
+        
+        .content-card {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 253, 245, 0.95);
+            padding: 60px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .brand { text-align: center; margin-bottom: 30px; }
+        .mascot-img { width: 130px; height: 130px; border-radius: 50%; border: 4px solid #fff; object-fit: cover; }
+        .brand h2 { margin-top: 15px; color: var(--color-text); font-weight: 700; letter-spacing: 2px; }
+        
+        .sidebar a { padding: 18px 40px; text-decoration: none; font-size: 18px; color: var(--color-text); display: flex; align-items: center; transition: 0.3s; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.03); }
+        .sidebar a i { width: 30px; color: var(--color-primary); margin-right: 10px; }
+        .sidebar a:hover { background: var(--color-hover); color: var(--color-accent); padding-left: 50px; }
+        
+        .submenu { display: none; background: rgba(255,255,255,0.4); }
+        .submenu a { padding-left: 80px; font-size: 16px; font-weight: 400; }
+
+        /* 原本的 #page-home 樣式已移至上方特殊處理 */
+        .hero-title { font-size: 4rem; margin-bottom: 20px; font-weight: 700; letter-spacing: 5px; }
+        .hero-desc { font-size: 1.5rem; background: rgba(94, 94, 94, 0.4); padding: 15px 30px; border-radius: 4px; backdrop-filter: blur(5px); }
+
+        .slider-nav { 
+            position: fixed; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: rgba(255,255,255,0.15); 
+            color: white; 
+            border: 2px solid rgba(255,255,255,0.6); 
+            width: 60px; height: 60px; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            
+            /* [修復關鍵] 只針對顏色與變形做過渡，防止位置(top/left)重新計算時產生動畫 */
+            transition: background-color 0.3s, border-color 0.3s, transform 0.3s; 
+            
+            z-index: 100; 
+            font-size: 24px; 
+            pointer-events: auto; 
+        }
+        .slider-nav:hover { background: var(--color-primary); border-color: var(--color-primary); }
+        .prev-btn { }
+        .next-btn { right: 40px; }
+        
+        /* 景點詳情 Toggle List */
+        .info-toggle { margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+        .info-toggle-header { padding: 12px 15px; background: rgba(141, 163, 153, 0.15); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #5F5F5F; transition: 0.3s; user-select: none; }
+        .info-toggle-header:hover { background: rgba(141, 163, 153, 0.25); }
+        .info-toggle-header i { transition: transform 0.3s; }
+        .info-toggle-header.active i { transform: rotate(180deg); }
+        .info-toggle-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; padding: 0 15px; background: #fff; }
+        .info-toggle-content.active { max-height: 500px; padding: 15px 15px; }
+        .info-toggle-content p { margin: 8px 0; font-size: 0.95em; line-height: 1.6; }
+
+        /* =========================================
+           [新增] 輪盤小遊戲樣式
+           ========================================= */
+        #roulette-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(0,0,0,0.7);
+            z-index: 15000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #roulette-modal.show {
+            opacity: 1;
+        }
+
+        .roulette-container {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            border: 10px solid #fff;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            /* 使用 conic-gradient 製作扇形，5個選項每72度一個 */
+            background: conic-gradient(
+                #C67C6D 0deg 72deg,    /* 興旺餅舖 - 莫蘭迪紅 */
+                #E6E2D6 72deg 144deg,  /* 木精靈豆花 - 米白 */
+                #8DA399 144deg 216deg, /* 配天宮 - 莫蘭迪綠 */
+                #D8D3C5 216deg 288deg, /* 蒜頭糖廠 - 灰棕 */
+                #A89B9D 288deg 360deg  /* 用九柑仔店 - 紫灰 */
+            );
+            transition: transform 8s cubic-bezier(0.17, 0.67, 0.12, 0.99); /* 模擬轉盤減速效果 */
+        }
+
+        /* 輪盤上的文字標籤 */
+        .wheel-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0 0;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            width: 140px; /* 半徑長度 */
+            text-align: right;
+            padding-right: 20px;
+            line-height: 0;
+            /* 讓文字垂直置中於扇形 */
+        }
+
+        /* 轉盤中間的裝飾點 */
+        .wheel-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            background: #fff;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: var(--color-primary);
+        }
+
+        /* 指針 */
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; 
+            height: 0; 
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #FF5733;
+            z-index: 20;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+        }
+
+        /* 按鈕群組 */
+        .roulette-controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .roulette-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-spin { background: var(--color-accent); color: white; }
+        .btn-spin:hover { transform: scale(1.05); background: #d66a58; }
+        .btn-spin:disabled { background: #999; cursor: not-allowed; transform: none; }
+
+        .btn-close { background: #fff; color: #555; }
+        .btn-close:hover { background: #eee; }
+
+        /* RWD */
+        @media screen and (max-width: 1024px) {
+            /* [修正] 手機版顯示並開啟 Flexbox */
+            .menu-btn { display: flex; }
+            .sidebar {
+                left: calc(var(--sidebar-width) * -1);
+                padding-top: 100px;
+            }
+            .sidebar.active { left: 0; box-shadow: 10px 0 50px rgba(0,0,0,0.3); }
+            #content-wrapper { padding-left: 0; }
+            body.blur-active #content-wrapper, body.blur-active #bg-slider, body.blur-active .overlay { filter: blur(8px); pointer-events: none; user-select: none; }
+        }
+
+        @media screen and (max-width: 768px) {
+            .hero-title { font-size: 3rem; }
+            .content-card { padding: 30px; width: 90%; margin-top: 60px; }
+            .slider-nav { width: 45px; height: 45px; font-size: 18px; }
+            .prev-btn { left: 15px !important; }
+            .next-btn { right: 15px; }
+            /* 輪盤手機版調整 */
+            .roulette-container { width: 280px; height: 280px; }
+            .wheel-label { font-size: 14px; width: 110px; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="intro-layer">
+        <div class="intro-text">
+            <i class="fas fa-chevron-down"></i> 滾動滑鼠來探訪六腳
+        </div>
+    </div>
+
+    <div id="bg-slider" style="background-image: url('./assets/ptg00.jpg');"></div>
+    <div class="overlay"></div>
+
+    <button class="menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div id="sidebar" class="sidebar">
+        <div class="brand">
+            <div class="mascot-container">
+                <img src="./assets/MascotWithBG.jpeg" alt="蒜頭小醬" class="mascot-img" onclick = "navigateTo('page-home')">
+            </div>
+            <h2>六腳蒜泥厲害</h2>
+        </div>
+        
+        <a href="#" onclick="navigateTo('page-home')"><i class="fas fa-home"></i> 首頁</a>
+        <a href="#" onclick="navigateTo('page-intro')"><i class="fas fa-book-reader"></i> 六腳簡介</a>
+        
+        <a href="#" onclick="toggleSubmenu()"><i class="fas fa-map-marked-alt"></i> 景點列表 <i class="fas fa-chevron-down" style="float:right; font-size: 0.8em;"></i></a>
+        <div id="submenu" class="submenu">
+            <a href="#" onclick="navigateToSpot('蒜頭糖廠', './assets/sugar00.jpg')">蒜頭糖廠</a>
+            <a href="#" onclick="navigateToSpot('用九柑仔店', './assets/yon9.png')">用九柑仔店</a>
+            <a href="#" onclick="navigateToSpot('興旺餅舖', './assets/xwbp00.jpg')">興旺餅舖</a>
+            <a href="#" onclick="navigateToSpot('木精靈豆花', './assets/tofup00.jpg')">木精靈豆花</a>
+            <a href="#" onclick="navigateToSpot('配天宮', './assets/ptg00.jpg')">配天宮</a>
+        </div>
+
+        <a href="#" onclick="openRoulette()"><i class="fas fa-dice"></i> 命運輪盤</a>
+        <a href="#" onclick="navigateTo('page-recommend')"><i class="fas fa-thumbs-up"></i> 推薦景點</a>
+        <a href="#" onclick="navigateTo('page-weather')"><i class="fas fa-cloud-sun"></i> 六腳天氣</a>
+        <a href="#" onclick="navigateTo('page-about')"><i class="fas fa-users"></i> 關於我們</a>
+        <a href="javascript:void(0)" onclick="spawnPet()" id="pet-btn"><i class="fas fa-cat"></i> 召喚桌寵</a>
+    </div>
+
+    <div id="content-wrapper">
+        
+        <div id="page-home" class="page-section" style="display: flex;">
+            <h1 id="home-title" class="hero-title" onclick="goToCurrentSpot()" style="cursor: pointer;">配天宮</h1>
+            <p id="home-desc" class="hero-desc" onclick="goToCurrentSpot()" style="cursor: pointer;">配天宮是六腳鄉的信仰中心，供奉媽祖。</p>
+            <button class="slider-nav prev-btn" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-nav next-btn" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <div id="page-intro" class="page-section">
+            <div class="content-card">
+                <h1>六腳簡介</h1>
+                <p><strong>六腳鄉</strong>位於嘉義縣西部，是典型的台灣嘉南平原農村。</p>
+                <p>這裡盛產<strong>蒜頭、花生、蘆筍</strong>，其中「蒜頭」更是全台聞名。</p>
+                
+                <div id="intro-details"></div>
+                
+                <div style="display:none;">
+                    <h3>地名由來</h3>
+                    <p>六腳鄉舊稱「六家佃」。相傳在清乾隆年間，有六戶佃農來到這裡開墾，因此得名。也有傳言說是因為閩南語中「家」與「腳（跤）」的發音相似，長年下來被外人誤傳，最後乾脆將錯就錯，正式定名為「六腳」。</p>
+                    
+                    <h3>文化特色與影視取景地</h3>
+                    <p>近年來，六腳鄉憑藉著保存完整的農村風貌，成為影視作品取景的首選。潭墘社區的「慶和柑仔店」因台劇《用九柑仔店》而聲名大噪，木造的老建築與溫暖的人情味，勾勒出台灣人心中最深處的童年鄉愁。此外，這裡也是搖滾天王伍佰的故鄉，純樸的田園景色與老街風情，讓六腳鄉不僅是一個行政區，更像是一座活生生的台灣近代生活博物館。</p>
+                    
+                    <h3>在地特產與美食</h3>
+                    <p>在地特產以花生、蘆筍與甜椒最負盛名，高品質的農產不僅供應全台，更是農民辛勤耕作的結晶。此外，傳統工法製作的「蒜頭餅」以大蒜入餡，鹹甜適口，是遊客必買的道地伴手禮。來到六腳，不僅能看見隨風搖曳的綠色田園，更能從每一口紮實的農產與古法點心中，品味到這片土地最純粹、最厚實的滋味。</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-recommend" class="page-section">
+            <div class="content-card">
+                <h1>推薦行程</h1>
+                <ul>
+                    <li><strong>春季：</strong> 朴子溪苦楝樹綠色隧道</li>
+                    <li><strong>夏季：</strong> 蒜頭糖廠吃冰</li>
+                    <li><strong>秋季：</strong> 自行車道追風</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="page-weather" class="page-section">
+            <div class="content-card">
+                <h1>六腳當日天氣</h1>
+                <div style="text-align: center; margin: 30px;">
+                    <i id="w-icon" class="fas fa-sun" style="color: var(--color-accent); font-size: 60px;"></i>
+                    <h3 id="w-desc">讀取中...</h3>
+                    <h2 id="w-temp" style="font-size: 3rem; margin: 10px 0;">--°C</h2>
+                    <p id="w-rain">降雨機率：--%</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-about" class="page-section">
+            <div class="content-card">
+                <h1>關於我們</h1>
+                <p>由嘉義大學資訊管理學系六腳小組製作。</p>
+            </div>
+        </div>
+
+        <div id="page-spot-detail" class="page-section">
+            <div class="content-card">
+                <h1 id="spot-title">景點名稱</h1>
+                <div id="spot-images" style="margin: 20px 0; text-align: center;">
+                    <img id="spot-main-img" src="" alt="景點圖片" style="max-width: 100%; height: auto; margin-bottom: 10px; border-radius: 8px;">
+                    <div id="spot-gallery" style="display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px;"></div>
+                </div>
+                <p id="spot-desc" style="font-size: 1.05em; line-height: 1.8; color: #5F5F5F; margin-bottom: 20px;">介紹...</p>
+                <div id="spot-details" style="margin-top: 20px;"></div>
+                <button onclick="navigateTo('page-home')" style="background:#ddd; border:none; padding:10px 20px; cursor:pointer; margin-top: 20px; border-radius: 4px; transition: 0.3s;">回首頁</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="roulette-modal">
+        <div style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">今天去哪裡？</div>
+        <div class="roulette-container">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" id="wheel">
+                <div class="wheel-center"><i class="fas fa-map-marker-alt"></i></div>
+                </div>
+        </div>
+        <div class="roulette-controls">
+            <button class="roulette-btn btn-spin" onclick="spinWheel()" id="spin-btn">開始旋轉</button>
+            <button class="roulette-btn btn-close" onclick="closeRoulette()">關閉</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 氣象 API ---
+        async function updateSix腳Weather() {
+            const url = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=CWA-F3248D88-C0EF-4FCD-B78D-3BECE3DD9B51&locationId=F-D0047-031&LocationName=%E5%85%AD%E8%85%B3%E9%84%89&sort=time";
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const weatherElements = data.records.Locations[0].Location[0].WeatherElement;
+                const weatherDesc = weatherElements.find(el => el.ElementName === "天氣現象").Time[0].ElementValue[0].Weather;
+                const temp = weatherElements.find(el => el.ElementName === "平均溫度").Time[0].ElementValue[0].Temperature;
+                const pop = weatherElements.find(el => el.ElementName === "12小時降雨機率").Time[0].ElementValue[0].ProbabilityOfPrecipitation;
+                renderWeatherToPage(weatherDesc, temp, pop);
+            } catch (error) {
+                console.error("氣象資料抓取失敗:", error);
+                document.getElementById('w-desc').innerText = "連線失敗";
+            }
+        }
+
+        function renderWeatherToPage(desc, temp, rain) {
+            const descEl = document.getElementById('w-desc');
+            const tempEl = document.getElementById('w-temp');
+            const rainEl = document.getElementById('w-rain');
+            const iconEl = document.getElementById('w-icon');
+            descEl.innerText = desc;
+            tempEl.innerText = temp + "°C";
+            rainEl.innerText = "降雨機率：" + (rain === "-" ? "0" : rain) + "%";
+            if (desc.includes("雨")) {
+                iconEl.className = "fas fa-cloud-showers-heavy";
+                iconEl.style.color = "#8DA399";
+            } else if (desc.includes("雲")) {
+                iconEl.className = "fas fa-cloud-sun";
+                iconEl.style.color = "#D8D3C5";
+            } else {
+                iconEl.className = "fas fa-sun";
+                iconEl.style.color = "#C67C6D";
+            }
+        }
+
+        // --- 核心邏輯 ---
+        let introDismissed = false; 
+        function dismissIntro() {
+            if (!introDismissed) {
+                const introLayer = document.getElementById('intro-layer');
+                introLayer.classList.add('hidden'); 
+                introDismissed = true;
+                window.removeEventListener('wheel', dismissIntro);
+                window.removeEventListener('touchmove', dismissIntro);
+                introLayer.removeEventListener('click', dismissIntro);
+            }
+        }
+        window.addEventListener('wheel', dismissIntro, { once: true }); 
+        window.addEventListener('touchmove', dismissIntro, { once: true });
+        document.getElementById('intro-layer').addEventListener('click', dismissIntro);
+
+        function updatePrevButtonPosition() {
+            const prevBtn = document.querySelector('.prev-btn');
+            if (prevBtn && prevBtn.style.display !== 'none') {
+                const root = document.documentElement;
+                const sidebarWidthStr = getComputedStyle(root).getPropertyValue('--sidebar-width').trim();
+                const sidebarWidth = window.innerWidth > 1024 ? parseInt(sidebarWidthStr) : 0;
+                prevBtn.style.left = (sidebarWidth + 20) + 'px';
+            }
+        }
+        window.addEventListener('load', updatePrevButtonPosition);
+        window.addEventListener('resize', updatePrevButtonPosition);
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const body = document.body;
+            sidebar.classList.toggle("active");
+            if (window.innerWidth <= 1024) {
+                body.classList.toggle("blur-active");
+            }
+        }
+
+        function closeSidebar() {
+            document.getElementById("sidebar").classList.remove("active");
+            document.body.classList.remove("blur-active");
+        }
+
+        function toggleSubmenu() {
+            const submenu = document.getElementById("submenu");
+            submenu.style.display = (submenu.style.display === "block") ? "none" : "block";
+        }
+
+        function navigateTo(pageId) {
+            const pages = document.querySelectorAll('.page-section');
+            pages.forEach(p => p.style.display = 'none');
+            const navButtons = document.querySelectorAll('.slider-nav');
+            if (pageId === 'page-home') {
+                // 重置為配天宮（首頁預設背景）
+                current = 0;
+                document.getElementById('bg-slider').style.backgroundImage = `url('${slides[0].img}')`;
+                document.getElementById('bg-slider').style.backgroundPosition = 'center';
+                document.getElementById('home-title').innerText = slides[0].title;
+                document.getElementById('home-desc').innerText = slides[0].desc;
+                navButtons.forEach(btn => {
+                    btn.style.display = 'flex';
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                });
+                setTimeout(updatePrevButtonPosition, 0);
+            } else {
+                navButtons.forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
+            if (pageId === 'page-intro') {
+                initIntroDetailsToggle();
+            }
+            if (pageId === 'page-weather') {
+                updateSix腳Weather(); 
+            }
+            const target = document.getElementById(pageId);
+            if (target) {
+                target.style.display = (pageId === 'page-home') ? 'flex' : 'block';
+            }
+            closeSidebar(); 
+            window.scrollTo(0, 0);
+        }
+
+        function navigateToSpot(name, imgUrl) {
+            const spotData = spotsData[name];
+            if (spotData) {
+                document.getElementById('spot-title').innerText = name;
+                document.getElementById('spot-main-img').src = spotData.mainImg;
+                document.getElementById('spot-desc').innerText = spotData.description;
+                generateSpotDetailsToggle(spotData.details);
+                const gallery = document.getElementById('spot-gallery');
+                gallery.innerHTML = '';
+                if (spotData.gallery && spotData.gallery.length > 0) {
+                    spotData.gallery.forEach(img => {
+                        const thumbImg = document.createElement('img');
+                        thumbImg.src = img;
+                        thumbImg.alt = name;
+                        thumbImg.style.width = '80px';
+                        thumbImg.style.height = '80px';
+                        thumbImg.style.objectFit = 'cover';
+                        thumbImg.style.borderRadius = '4px';
+                        thumbImg.style.cursor = 'pointer';
+                        thumbImg.onclick = () => {
+                            document.getElementById('spot-main-img').src = img;
+                        };
+                        gallery.appendChild(thumbImg);
+                    });
+                }
+                document.getElementById('bg-slider').style.backgroundImage = `url('${spotData.mainImg}')`;
+            } else {
+                document.getElementById('spot-title').innerText = name;
+                document.getElementById('spot-desc').innerText = `這是 ${name} 的詳細介紹。`;
+                document.getElementById('spot-details').innerHTML = '<p>敬請期待更多資訊...</p>';
+            }
+            navigateTo('page-spot-detail');
+        }
+
+        function generateSpotDetailsToggle(htmlContent) {
+            const detailsContainer = document.getElementById('spot-details');
+            detailsContainer.innerHTML = '';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            const sections = [];
+            let currentSection = null;
+            tempDiv.childNodes.forEach(node => {
+                if (node.tagName === 'H3') {
+                    if (currentSection) {
+                        sections.push(currentSection);
+                    }
+                    currentSection = { title: node.textContent, content: [] };
+                } else if (node.tagName === 'P' && currentSection) {
+                    currentSection.content.push(node.outerHTML);
+                }
+            });
+            if (currentSection) { sections.push(currentSection); }
+            sections.forEach((section, index) => {
+                const toggleItem = document.createElement('div');
+                toggleItem.className = 'info-toggle';
+                const header = document.createElement('div');
+                header.className = 'info-toggle-header';
+                header.innerHTML = `<span>${section.title}</span><i class="fas fa-chevron-down"></i>`;
+                const content = document.createElement('div');
+                content.className = 'info-toggle-content';
+                content.innerHTML = section.content.join('');
+                if (index === 0) { header.classList.add('active'); content.classList.add('active'); }
+                header.addEventListener('click', () => {
+                    const isActive = header.classList.toggle('active');
+                    content.classList.toggle('active');
+                });
+                toggleItem.appendChild(header);
+                toggleItem.appendChild(content);
+                detailsContainer.appendChild(toggleItem);
+            });
+        }
+
+        function initIntroDetailsToggle() {
+            const detailsContainer = document.getElementById('intro-details');
+            const hiddenDiv = detailsContainer.parentElement.querySelector('div[style*="display:none"]');
+            
+            if (!hiddenDiv) return;
+            
+            detailsContainer.innerHTML = '';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = hiddenDiv.innerHTML;
+            
+            const sections = [];
+            let currentSection = null;
+            
+            tempDiv.childNodes.forEach(node => {
+                if (node.tagName === 'H3') {
+                    if (currentSection) {
+                        sections.push(currentSection);
+                    }
+                    currentSection = { title: node.textContent, content: [] };
+                } else if (node.tagName === 'P' && currentSection) {
+                    currentSection.content.push(node.outerHTML);
+                }
+            });
+            
+            if (currentSection) { sections.push(currentSection); }
+            
+            sections.forEach((section, index) => {
+                const toggleItem = document.createElement('div');
+                toggleItem.className = 'info-toggle';
+                
+                const header = document.createElement('div');
+                header.className = 'info-toggle-header';
+                header.innerHTML = `<span>${section.title}</span><i class="fas fa-chevron-down"></i>`;
+                
+                const content = document.createElement('div');
+                content.className = 'info-toggle-content';
+                content.innerHTML = section.content.join('');
+                
+                if (index === 0) { 
+                    header.classList.add('active'); 
+                    content.classList.add('active'); 
+                }
+                
+                header.addEventListener('click', () => {
+                    const isActive = header.classList.toggle('active');
+                    content.classList.toggle('active');
+                });
+                
+                toggleItem.appendChild(header);
+                toggleItem.appendChild(content);
+                detailsContainer.appendChild(toggleItem);
+            });
+        }
+
+
+        // =========================================
+        // [新增] 輪盤小遊戲邏輯
+        // =========================================
+        
+        // 定義輪盤選項 (順序需對應 CSS conic-gradient)
+        // 0-72度, 72-144度, 144-216度, 216-288度, 288-360度
+        const rouletteItems = [
+            { name: '興旺餅舖', color: '#C67C6D', img: './assets/xwbp00.jpg' },
+            { name: '木精靈豆花', color: '#E6E2D6', img: './assets/tofup00.jpg' },
+            { name: '配天宮', color: '#8DA399', img: './assets/ptg00.jpg' },
+            { name: '蒜頭糖廠', color: '#D8D3C5', img: './assets/sugar00.jpg' },
+            { name: '用九柑仔店', color: '#A89B9D', img: './assets/yon9.png' }
+        ];
+
+        let currentDeg = 0; // 記錄當前角度
+
+        // 初始化輪盤文字標籤
+        function initRouletteLabels() {
+            const wheel = document.getElementById('wheel');
+            // 清除除了中間點以外的內容
+            const center = wheel.querySelector('.wheel-center');
+            wheel.innerHTML = '';
+            wheel.appendChild(center);
+
+            const segmentDeg = 360 / rouletteItems.length; // 每個扇形 72 度
+
+            rouletteItems.forEach((item, index) => {
+                const label = document.createElement('div');
+                label.className = 'wheel-label';
+                label.innerText = item.name;
+                
+                // 計算旋轉角度：每個扇形的中間線
+                // index 0 (0-72) -> 中間是 36
+                const rotateDeg = (index * segmentDeg) + (segmentDeg / 2);
+                
+                // 為了讓文字閱讀方向正確，我們將文字放在扇形中間
+                label.style.transform = `rotate(${rotateDeg}deg) translateX(10px)`;
+                
+                wheel.appendChild(label);
+            });
+        }
+
+        function openRoulette() {
+            closeSidebar(); // 關閉側邊欄
+            initRouletteLabels(); // 確保標籤位置正確
+            const modal = document.getElementById('roulette-modal');
+            modal.style.display = 'flex';
+            // 延遲添加 opacity 達到淡入效果
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeRoulette() {
+            const modal = document.getElementById('roulette-modal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spin-btn');
+            
+            // 禁用按鈕防止重複點擊
+            spinBtn.disabled = true;
+            spinBtn.innerText = "旋轉中...";
+
+            // 隨機旋轉圈數 (5圈到10圈之間) + 隨機角度
+            const randomSpins = 5 + Math.random() * 5; 
+            const randomDegree = Math.floor(Math.random() * 360);
+            
+            // 累加角度，確保每次都從當前位置繼續轉
+            currentDeg += (randomSpins * 360) + randomDegree;
+            
+            wheel.style.transform = `rotate(${currentDeg}deg)`;
+
+            // 8秒後顯示結果 (對應 CSS transition 時間)
+            setTimeout(() => {
+                calculateWinner(currentDeg);
+                spinBtn.disabled = false;
+                spinBtn.innerText = "再來一次";
+            }, 8000);
+        }
+
+        function calculateWinner(deg) {
+        // 1. 計算最後停下來的角度 (取餘數 0-360)
+        const actualDeg = deg % 360;
+        
+        // 2. 轉換為指針下的角度
+        // 輪盤是順時針轉，所以指針相對是逆時針移動
+        // 加上 360 是為了避免負數運算問題
+        const pointDeg = (360 - actualDeg) % 360;
+        
+        // 3. 計算每個扇形的角度 (72度)
+        const segmentDeg = 360 / rouletteItems.length; 
+        
+        // 4. 計算原始 Index
+        let index = Math.floor(pointDeg / segmentDeg);
+        
+
+        index = (index - 1) % rouletteItems.length;
+
+        if(index < 0) {
+            index += rouletteItems.length;
+        }
+
+        const winner = rouletteItems[index];
+
+        if(confirm(`蒜頭小醬幫你選中了：\n【${winner.name}】\n\n要現在前往查看嗎？`)) {
+            closeRoulette();
+            navigateToSpot(winner.name, winner.img);
+        }
+}
+
+        // --- 輪播數據 ---
+        const slides = [
+            { img: './assets/ptg00.jpg', title: '配天宮', desc: '配天宮是六腳鄉的信仰中心，供奉媽祖。' },
+            { img: './assets/sugar00.jpg', title: '蒜頭糖廠', desc: '品嘗古早味糖廠冰棒。' },
+            { img: './assets/yon9.png', title: '用九柑仔店', desc: '感受懷舊雜貨店的溫馨。' },
+            { img: './assets/xwbp00.jpg', title: '興旺餅舖', desc: '品嚐傳統糕餅的美味。' },
+            { img: './assets/tofup00.jpg', title: '木精靈豆花', desc: '享受清涼消暑的古早味豆花。' }
+        ];
+
+        // 景點詳細數據
+        const spotsData = {
+            '興旺餅舖': {
+                mainImg: './assets/xwbp00.jpg',
+                gallery: ['./assets/xwbp00.jpg', './assets/xwbp01.jpg', './assets/xwbp02.jpg'],
+                description: '六腳在地老字號餅舖，傳承三代的傳統糕餅手藝。',
+                details: `<h3>基本資訊</h3><p><strong>地址：</strong>嘉義縣六腳鄉南宮路481號</p><p><strong>營業時間：</strong>週一至週日 07:00～21:00</p><p><strong>特色商品：</strong>蒜頭餅、綠豆椪、鳳梨酥、麻糬</p><h3>家鄉的味道</h3><p>在六腳，有一種味道是老一輩出遠門時最思念的家鄉味，還有著傳承一甲子的手作溫度，就是在巷弄裡的「興旺餅舖」。</p><h3>剛出爐的餅香</h3><p>走進餅舖，剛出爐的餅香撲鼻而來。這裡最出名的蒜頭餅，外皮酥香、內餡軟糯，鹹甜交織的滋味讓人難忘。</p><h3>手工的溫度</h3><p>每一塊都是老師傅手工捏製，這不只是一份伴手禮，更是六腳人代代相傳的記憶。在這個機械生產盛行的年代，興旺餅舖依然堅持那份手感的溫度，讓每一口都能感受到那份最樸實的鄉村熱情。</p>`
+            },
+            '木精靈豆花': {
+                mainImg: './assets/tofup00.jpg',
+                gallery: ['./assets/tofup00.jpg', './assets/tofup01.jpg', './assets/tofup02.jpg', './assets/tofup03.jpg'],
+                description: '隱身田野間的特色豆花店，使用在地食材製作的古早味豆花。',
+                details: `<h3>基本資訊</h3><p><strong>地址：</strong>嘉義縣六腳鄉南宮路32號</p><p><strong>營業時間：</strong>週一、三、四、五 12:00～17:30，週末 09:30～18:00（週二公休）</p><p><strong>推薦品項：</strong>招牌豆花、綠豆湯、花生湯</p><h3>旅程的完美句點</h3><p>旅行的尾聲，最適合用一碗冰涼、綿密的甜點來做結尾。位於六家佃長壽橋旁的古早味，是在地人大推的隱藏版美食。</p><h3>真材實料的堅持</h3><p>這裡沒有浮誇的裝飾，靠的是真材實料。老闆堅持使用優質黃豆，遵循古法製作，豆花吃起來綿密細緻，帶著濃厚的豆香味。</p><h3>品嚐方式</h3><p>配上熬煮到軟爛的花生或紅豆，又或是搭配上Q彈的粉圓，再淋上一杓特製的糖水，甜而不膩，溫潤入心。這份簡單的甜，正是六腳鄉生活美學的最佳寫照。</p>`
+            },
+            '配天宮': {
+                mainImg: './assets/ptg00.jpg',
+                gallery: ['./assets/ptg00.jpg', './assets/ptg01.jpg', './assets/ptg02.jpg', './assets/ptg03.jpg'],
+                description: '配天宮是六腳鄉的信仰中心，供奉媽祖。',
+                details: `<h3>基本資訊</h3><p><strong>地址：</strong>嘉義縣六腳鄉工廠村1號</p><p><strong>開放時間：</strong>週一至週日 08:00～17:00</p><h3>糖廠內的信仰中心</h3><p>在蒜頭糖廠的園區內，有一座全台少見、與糖廠息息相關的信仰中心。這座廟與一般的宮廟不同，它與日治時期的糖業有著很深的關聯，見證了糖廠的興衰。</p><h3>寧靜的參拜空間</h3><p>進到廟裡就會發現，這裡的香火有著淡淡的甘蔗甜香。與市中心的嘈雜不同，這裡多了一份靜謐與莊嚴。這裡的媽祖保佑著這片土地的農作與居民。</p><h3>參拜意義</h3><p>來到這邊，不只是宗教的參拜，更是對台灣近代產業史的一場致敬。讓我們在配天宮的信仰中，用心感受從日治時期延續至今、能夠安撫人心的力量。</p>`
+            },
+            '蒜頭糖廠': {
+                mainImg: './assets/sugar00.jpg',
+                gallery: ['./assets/sugar00.jpg', './assets/sugar01.jpg', './assets/sugar02.jpg', './assets/sugar03.jpg', './assets/sugar04.jpg', './assets/sugar05.jpg', './assets/sugar06.jpg', './assets/sugar07.jpg'],
+                description: '蒜頭糖廠是台灣僅存的製糖工廠，保留了日式建築與古老機械。',
+                details: `<h3>基本資訊</h3><p><strong>地址：</strong>嘉義縣六腳鄉工廠村1號</p><p><strong>開放時間：</strong>週一至週日 08:00～17:00</p><p><strong>特色：</strong>古早味冰棒、五分車、工廠參觀</p><h3>歷史背景</h3><p>這裡曾被譽為「明治寶庫」，是六腳鄉的靈魂起點。雖然現在已經不產糖，但那份歷史的焦糖味仍然飄散於空氣中。</p><h3>五分車體驗</h3><p>來到蒜頭糖廠，你絕對不能錯過這裡最具特色的五分車。隨著一聲長笛，老舊的列車搖搖晃晃地駛入翠綠的田野，沿途聽著專業導覽解說著糖業的歷史，彷彿時光倒流。</p><h3>推薦體驗</h3><p>下車後，一定要買一支招牌的紅豆冰棒在日式木造建築群的樹蔭下，好好享受六腳鄉最迷人的午後風景。參觀保留完整的製糖機械設備，感受台灣糖業的歷史風華。</p>`
+            },
+            '用九柑仔店': {
+                mainImg: './assets/yon9.png',
+                gallery: ['./assets/yon9.png', './assets/yon901.jpg', './assets/yon902.jpg', './assets/yon903.jpg', './assets/yon904.jpg'],
+                description: '懷舊的柑仔店，販售傳統零食和生活用品，充滿復古韻味。',
+                details: `<h3>基本資訊</h3><p><strong>地址：</strong>嘉義縣六腳鄉166縣道91號</p><p><strong>營業時間：</strong>週一至週日 06:30～20:30</p><p><strong>特色商品：</strong>傳統零食、古早味糖果</p><p><strong>氛圍：</strong>懷舊復古、溫馨親切</p><h3>電視劇取景地</h3><p>如果你看過電視劇《用九柑仔店》，那你對這裡一定不陌生。這座擁有百年歷史的木造老建築，現在已成為具有情懷的打卡聖地。</p><h3>古早味的故事</h3><p>這裡保留了滿滿的古早味，從二樓的木製閣樓到擺滿零食的櫥櫃，都像是在對旅人訴說著過去的故事。這裡不賣名牌，賣的是鄰里間的關心與問候。</p><h3>心靈的照顧</h3><p>就像劇中說的：「這裡不只是賣東西，這裡是照顧大家的心靈。」踏入時光隧道，在柑仔店裡尋找兒時的回憶。琳瑯滿目的傳統零食，喚醒每個人心中的童年美好。</p>`
+            }
+        };
+
+        let current = 0;
+        function nextSlide() {
+            current = (current + 1) % slides.length;
+            updateSlide();
+        }
+        function prevSlide() {
+            current = (current - 1 + slides.length) % slides.length;
+            updateSlide();
+        }
+        function updateSlide() {
+            const bgSlider = document.getElementById('bg-slider');
+            const img = new Image();
+            img.onload = () => {
+                bgSlider.style.backgroundImage = `url('${slides[current].img}')`;
+                if (slides[current].title === '興旺餅舖') {
+                    bgSlider.style.backgroundPosition = '60% center';
+                } else {
+                    bgSlider.style.backgroundPosition = 'center';
+                }
+                if(document.getElementById('page-home').style.display !== 'none'){
+                    document.getElementById('home-title').innerText = slides[current].title;
+                    document.getElementById('home-desc').innerText = slides[current].desc;
+                }
+            };
+            img.src = slides[current].img;
+        }
+        function goToCurrentSpot() {
+            const currentSlide = slides[current];
+            navigateToSpot(currentSlide.title, currentSlide.img);
+        }
+
+        // --- 桌寵 ---
+        let petLoaded = false; 
+        let petElements = []; 
+        function spawnPet() {
+            const petBtn = document.getElementById('pet-btn');
+            if (petLoaded) {
+                petElements.forEach(el => {
+                    if (el && el.parentNode) {
+                        el.style.transition = 'opacity 0.5s';
+                        el.style.opacity = '0';
+                        setTimeout(() => { try { el.remove(); } catch(e) {} }, 500);
+                    }
+                });
+                setTimeout(() => {
+                    const allImgs = document.querySelectorAll('img');
+                    allImgs.forEach(img => {
+                        if (img.style.position === 'fixed' && img.style.cursor === 'grab' && img.style.zIndex === '9998') {
+                            img.style.opacity = '0';
+                            img.style.transition = 'opacity 0.3s';
+                            setTimeout(() => img.remove(), 300);
+                        }
+                    });
+                    const allDivs = document.querySelectorAll('div[style*="pointerEvents"]');
+                    allDivs.forEach(div => {
+                        if (div.style.zIndex === '9998' && div.style.position === 'fixed') {
+                            div.style.opacity = '0';
+                            div.style.transition = 'opacity 0.3s';
+                            setTimeout(() => div.remove(), 300);
+                        }
+                    });
+                }, 100);
+                petElements = [];
+                petLoaded = false;
+                if (petBtn) { petBtn.innerHTML = '<i class="fas fa-cat"></i> 召喚桌寵'; }
+                closeSidebar();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'pet.js?t=' + new Date().getTime(); 
+            script.onload = function() {
+                petLoaded = true;
+                setTimeout(() => {
+                    const allImgs = document.querySelectorAll('img');
+                    allImgs.forEach(img => {
+                        if (img.style.cursor === 'grab' && img.style.position === 'fixed') {
+                            petElements.push(img);
+                        }
+                    });
+                    const heartsContainer = document.querySelector('div[style*="pointerEvents: none"]');
+                    if (heartsContainer && heartsContainer.style.position === 'fixed') {
+                        petElements.push(heartsContainer);
+                    }
+                }, 300);
+                if (petBtn) { petBtn.innerHTML = '<i class="fas fa-times-circle"></i> 取消召喚'; }
+            };
+            script.onerror = function() { alert("召喚失敗，請檢查 pet.js 路徑是否正確。"); };
+            document.body.appendChild(script);
+            if (typeof closeSidebar === "function") { closeSidebar(); }
+        }
+    </script>
+</body>
+</html>
