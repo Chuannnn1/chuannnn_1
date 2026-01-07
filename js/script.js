@@ -63,6 +63,17 @@
         window.addEventListener('load', updatePrevButtonPosition);
         window.addEventListener('resize', updatePrevButtonPosition);
 
+        // 點擊瀏覽器區域（除了導航列外）時關閉側邊欄
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.menu-btn');
+            
+            // 檢查點擊是否在側邊欄或漢堡按鈕外
+            if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                closeSidebar();
+            }
+        });
+
         function toggleSidebar() {
             const sidebar = document.getElementById("sidebar");
             const body = document.body;
