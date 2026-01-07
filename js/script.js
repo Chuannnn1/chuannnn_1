@@ -598,3 +598,64 @@
                 console.error('送出留言失敗:', error);
             }
         }
+
+                    // 請填入你從 Cloudinary 拿到的資訊
+            const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dmgkbovcu/image/upload';
+            const UPLOAD_PRESET = 'lujiao_preset';
+
+            // 【功能：上傳圖片到 Cloudinary】
+            async function uploadToCloudinary(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', UPLOAD_PRESET);
+
+                try {
+                    const response = await fetch(CLOUDINARY_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    return data.secure_url; // 這就是 Cloudinary 給我們的圖片永久網址
+                } catch (error) {
+                    console.error('圖片上傳失敗:', error);
+                    return null;
+                }
+            }
+
+            // 【功能：整合留言與圖片送出】
+            async function sendMessage() {
+                const content = document.getElementById('message-content').value;
+                const imageFile = document.getElementById('image-upload').files[0];
+
+                if (!content) return alert("內容不能空著喔！");
+
+                let imageUrl = ""; // 預設沒有圖片
+
+                // 1. 如果有選圖片，先上傳到 Cloudinary
+                if (imageFile) {
+                    alert("圖片上傳中，請稍候...");
+                    imageUrl = await uploadToCloudinary(imageFile);
+                }
+
+                // 2. 準備要傳給 Node.js 的資料
+                const payload = {
+                    content: content,
+                    image_url: imageUrl // 如果沒傳圖，這就是空字串
+                };
+
+                // 3. 呼叫你原本寫好的 Node.js API
+                try {
+                    const response = await fetch('http://localhost:3000/api/messages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        alert("圖文留言成功！");
+                        location.reload(); // 重新整理看結果
+                    }
+                } catch (error) {
+                    console.error('存入 Supabase 失敗:', error);
+                }
+            }
