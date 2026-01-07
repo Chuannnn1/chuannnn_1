@@ -4,7 +4,7 @@
             { img: './assets/sugar00.jpg', title: '蒜頭糖廠', desc: '明治寶庫裡的五分車時光' },
             { img: './assets/yon9.png', title: '用九柑仔店', desc: '走進電視劇裡的溫暖時光' },
             { img: './assets/xwbp00.jpg', title: '興旺餅舖', desc: '傳承一甲子的手作溫度' },
-            { img: './assets/tofup00.jpg', title: '木精靈豆花', desc: '長壽橋畔旁的甜蜜' }
+            { img: './assets/tofup00.jpg', title: '木精靈豆花', desc: '長壽橋畔旁的甜蜜蜜' }
         ];
 
         // 景點詳細數據

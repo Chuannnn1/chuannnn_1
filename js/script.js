@@ -60,7 +60,10 @@
                 prevBtn.style.left = (sidebarWidth + 20) + 'px';
             }
         }
-        window.addEventListener('load', updatePrevButtonPosition);
+        window.addEventListener('load', () => {
+            updatePrevButtonPosition();
+            startAutoSlide();
+        });
         window.addEventListener('resize', updatePrevButtonPosition);
 
         // 點擊瀏覽器區域（除了導航列外）時關閉側邊欄
@@ -109,11 +112,14 @@
                     btn.style.opacity = '1';
                     btn.style.pointerEvents = 'auto';
                 });
+                stopAutoSlide();
+                startAutoSlide();
                 setTimeout(updatePrevButtonPosition, 0);
             } else {
                 navButtons.forEach(btn => {
                     btn.style.display = 'none';
                 });
+                stopAutoSlide();
             }
             if (pageId === 'page-intro') {
                 initIntroDetailsToggle();
@@ -423,13 +429,29 @@
 
 
         let current = 0;
+        let autoSlideInterval;
+        
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+                nextSlide();
+            }, 4000);
+        }
+        
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+        
         function nextSlide() {
             current = (current + 1) % slides.length;
+            stopAutoSlide();
             updateSlide();
+            startAutoSlide();
         }
         function prevSlide() {
             current = (current - 1 + slides.length) % slides.length;
+            stopAutoSlide();
             updateSlide();
+            startAutoSlide();
         }
         function updateSlide() {
             const bgSlider = document.getElementById('bg-slider');
