@@ -278,7 +278,6 @@
                 #D8D3C5 216deg 288deg, /* 蒜頭糖廠 - 灰棕 */
                 #A89B9D 288deg 360deg  /* 用九柑仔店 - 紫灰 */
             );
-            transition: transform 8s cubic-bezier(0.17, 0.67, 0.12, 0.99); /* 模擬轉盤減速效果 */
         }
 
         /* 輪盤上的文字標籤 */

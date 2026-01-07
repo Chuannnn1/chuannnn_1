@@ -296,6 +296,9 @@
             });
         }
 
+        let isWheelSpinning = false; // 追蹤輪盤是否正在旋轉
+        let spinTimeoutId = null; // 保存 setTimeout ID，方便取消
+
         function openRoulette() {
             closeSidebar(); // 關閉側邊欄
             initRouletteLabels(); // 確保標籤位置正確
@@ -307,6 +310,26 @@
 
         function closeRoulette() {
             const modal = document.getElementById('roulette-modal');
+            const wheel = document.getElementById('wheel');
+            
+            // 如果輪盤正在旋轉，立即停止動畫
+            if (isWheelSpinning) {
+                // 清除未執行的 setTimeout
+                if (spinTimeoutId !== null) {
+                    clearTimeout(spinTimeoutId);
+                    spinTimeoutId = null;
+                }
+                
+                wheel.style.transition = 'none'; // 移除過渡效果
+                wheel.style.transform = `rotate(${currentDeg}deg)`; // 停止在當前位置
+                isWheelSpinning = false;
+                
+                // 重置按鈕狀態
+                const spinBtn = document.getElementById('spin-btn');
+                spinBtn.disabled = false;
+                spinBtn.innerText = '開始旋轉';
+            }
+            
             modal.classList.remove('show');
             setTimeout(() => modal.style.display = 'none', 300);
         }
@@ -315,9 +338,16 @@
             const wheel = document.getElementById('wheel');
             const spinBtn = document.getElementById('spin-btn');
             
+            // 清除之前的 timeout（以防用戶快速連續點擊）
+            if (spinTimeoutId !== null) {
+                clearTimeout(spinTimeoutId);
+                spinTimeoutId = null;
+            }
+            
             // 禁用按鈕防止重複點擊
             spinBtn.disabled = true;
             spinBtn.innerText = "旋轉中...";
+            isWheelSpinning = true; // 標記輪盤正在旋轉
 
             // 隨機旋轉圈數 (5圈到10圈之間) + 隨機角度
             const randomSpins = 5 + Math.random() * 5; 
@@ -326,13 +356,20 @@
             // 累加角度，確保每次都從當前位置繼續轉
             currentDeg += (randomSpins * 360) + randomDegree;
             
+            // 確保應用過渡效果
+            wheel.style.transition = 'transform 8s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
             wheel.style.transform = `rotate(${currentDeg}deg)`;
 
             // 8秒後顯示結果 (對應 CSS transition 時間)
-            setTimeout(() => {
-                calculateWinner(currentDeg);
-                spinBtn.disabled = false;
-                spinBtn.innerText = "再來一次";
+            spinTimeoutId = setTimeout(() => {
+                spinTimeoutId = null; // 清空 timeout ID
+                // 再次檢查是否還在旋轉（防止被中止的旋轉觸發結果）
+                if (isWheelSpinning) {
+                    isWheelSpinning = false; // 旋轉結束
+                    calculateWinner(currentDeg);
+                    spinBtn.disabled = false;
+                    spinBtn.innerText = "再來一次";
+                }
             }, 8000);
         }
 
@@ -360,9 +397,16 @@
 
         const winner = rouletteItems[index];
 
-        if(confirm(`蒜頭小醬幫你選中了：\n【${winner.name}】\n\n要現在前往查看嗎？`)) {
+        const userWantToNavigate = confirm(`蒜頭小醬幫你選中了：\n【${winner.name}】\n\n要現在前往查看嗎？`);
+        
+        if(userWantToNavigate) {
             closeRoulette();
             navigateToSpot(winner.name, winner.img);
+        } else {
+            // 用戶選擇不前往，重置輪盤按鈕
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.disabled = false;
+            spinBtn.innerText = '再來一次';
         }
 }
 
