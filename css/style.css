@@ -580,3 +580,50 @@
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+
+        /* 留言板專屬樣式 */
+        .comment-section {
+            padding: 20px 0;
+        }
+
+        .comment-form-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+
+        .comment-form-card textarea {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Noto Serif TC', serif;
+            resize: none;
+            transition: 0.3s;
+        }
+
+        .comment-form-card textarea:focus {
+            border-color: var(--color-accent);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .upload-placeholder {
+            background: #f9f9f9;
+            border: 2px dashed #ddd;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
