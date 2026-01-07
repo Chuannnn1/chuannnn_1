@@ -549,7 +549,7 @@
         // 留言板功能 (與後端 API 溝通)
 
         // 1. 設定後端 API 的基地台網址
-        const API_URL = 'http://localhost:3000/api/messages';
+        const API_URL = 'https://lujiao-messaging-board.onrender.com';
 
         // 2. 當網頁載入完成後，立刻執行抓取留言的動作
         document.addEventListener('DOMContentLoaded', () => {
