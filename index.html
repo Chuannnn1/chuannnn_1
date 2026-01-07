@@ -138,7 +138,7 @@
 
                 <!-- 全部景點區域 -->
                 <div class="all-spots-section">
-                    <h2>六腳攻略</h2>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 10px;">六腳攻略</h2>
                     <div class="all-spots-grid">
                         
                         <div class="rec-card" onclick="navigateToSpot('在地炭烤美味', './assets/T1.jpg')">
@@ -208,17 +208,14 @@
                  <div class="comment-form-card">
                     <div class="form-group">
                         <label for="message-content"><i class="fas fa-pen-nib"></i> 寫下你的留言...</label>
-                        <textarea id="message-content" placeholder="例：蒜頭糖廠的紅豆冰棒超好吃！" rows="4"></textarea>
+                        <div style="position: relative;">
+                            <textarea id="message-content" placeholder="例：蒜頭糖廠的芋頭冰還不賴！" rows="3"></textarea>
+                            <input type="file" id="image-upload" accept="image/*" class="comment-photo-input" style="display: none;">
+                            <button class="comment-photo-btn" type="button" title="上傳圖片">
+                                <img src="./assets/addPhoto_background.png" alt="上傳圖片" style="width: 28px; height: 28px;">
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                    <label for="image-upload"><i class="fas fa-camera"></i> 上傳六腳美照</label>
-                    <input type="file" id="image-upload" accept="image/*" class="custom-file-input">
-                    <div id="upload-preview" style="margin-top: 10px; display: none;">
-                        <p style="font-size: 0.8rem; color: #666;">預覽圖：</p>
-                        <img id="preview-img" src="" style="max-width: 100px; border-radius: 5px;">
-                    </div>
-                </div>
 
                     <button class="rec-btn" style="width: 100%; border: none; padding: 12px;" onclick="sendMessage()">
                         <i class="fas fa-paper-plane"></i> 發布留言

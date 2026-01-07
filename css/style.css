@@ -622,6 +622,32 @@
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
 
+        /* 留言表單圖片上傳按鈕 */
+        .comment-photo-btn {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+
+        .comment-photo-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .comment-photo-input {
+            display: none;
+        }
+
         .upload-placeholder {
             background: #f9f9f9;
             border: 2px dashed #ddd;
@@ -646,6 +672,7 @@
             gap: 12px;
             margin-bottom: 15px;
             align-items: flex-start;
+            max-width: 550px;
         }
 
         /* 蒜頭頭貼 */
@@ -658,14 +685,24 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
+        /* 對話氣泡框包裝層 */
+        .message-bubble-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
         /* 對話氣泡框容器 */
         .message-card .message-bubble {
-            flex: 1;
             background: #f0f0f0;
             border-radius: 12px;
             padding: 12px;
             position: relative;
             word-break: break-word;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         /* 氣泡尖角 */
@@ -684,8 +721,8 @@
         /* 留言內容文本 */
         .message-card .message-content {
             color: #333;
-            line-height: 1.5;
-            font-size: 0.9rem;
+            line-height: 1.6;
+            font-size: 1.05rem;
             margin-bottom: 6px;
         }
 
@@ -698,8 +735,95 @@
 
         /* 留言圖片預覽（如有上傳圖片） */
         .message-card .message-image {
-            max-width: 100%;
+            width: 100%;
+            height: auto;
             border-radius: 8px;
             margin-top: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+        }
+
+        /* 留言底部操作區 */
+        .message-bubble .message-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        /* 讚數區域 */
+        .message-like-area {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 時間戳和讚數容器 */
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 圖片上傳按鈕 */
+        .message-photo-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .message-photo-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .message-photo-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 隱藏的文件輸入 */
+        .message-photo-input {
+            display: none;
+        }
+
+        /* 點讚按鈕 */
+        .message-like-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .message-like-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .message-like-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 點讚數量 */
+        .message-like-count {
+            font-size: 0.75rem;
+            color: #999;
+            min-width: 20px;
+            text-align: center;
         }

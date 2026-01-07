@@ -554,23 +554,128 @@
                     // 建立留言卡片的 HTML 結構（對話氣泡風格）
                     const messageTime = new Date(msg.created_at).toLocaleString('zh-TW');
                     const imageHtml = msg.image_url ? `<img src="${msg.image_url}" alt="留言圖片" class="message-image">` : '';
+                    const likeCount = msg.likes || 0;
+                    const isLiked = msg.is_liked || false;
+                    const likeIconSrc = isLiked ? './assets/goood_liked.png' : './assets/Goood_like_yet.png';
                     
                     const card = `
                         <div class="message-card">
                             <img src="./assets/MascotWithBG.jpeg" alt="蒜頭小醬" class="mascot-avatar">
-                            <div class="message-bubble">
-                                <p class="message-content">${msg.content}</p>
-                                ${imageHtml}
-                                <div class="message-time">${messageTime}</div>
+                            <div class="message-bubble-wrapper">
+                                <div class="message-bubble">
+                                    <p class="message-content">${msg.content}</p>
+                                    ${imageHtml}
+                                    <div class="message-footer">
+                                        <div class="message-time">${messageTime}</div>
+                                        <div class="message-like-area">
+                                            <button class="message-like-btn" data-msg-id="${msg.id}" title="按讚">
+                                                <img src="${likeIconSrc}" alt="讚">
+                                            </button>
+                                            <span class="message-like-count">${likeCount}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
                     messageList.innerHTML += card;
                 });
+
+                // 綁定事件監聽器
+                attachMessageEventListeners();
             } catch (error) {
                 console.error('抓取留言失敗:', error);
                 document.getElementById('message-list').innerHTML = '<p style="text-align: center; color: #999; padding: 30px;">留言加載失敗，請稍後重試</p>';
             }
+        }
+
+        // 綁定留言卡片的事件監聽器
+        function attachMessageEventListeners() {
+            // 圖片上傳按鈕事件
+            document.querySelectorAll('.message-photo-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = this.nextElementSibling;
+                    input.click();
+                });
+            });
+
+            // 圖片選擇事件
+            document.querySelectorAll('.message-photo-input').forEach(input => {
+                input.addEventListener('change', async function() {
+                    const file = this.files[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    const msgCard = this.closest('.message-card');
+                    const msgId = msgCard.querySelector('.message-photo-btn').dataset.msgId;
+                    
+                    formData.append('image', file);
+                    formData.append('message_id', msgId);
+
+                    try {
+                        const response = await fetch(`${API_URL}/${msgId}/image`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            const updatedMsg = await response.json();
+                            // 更新圖片顯示
+                            const existingImg = msgCard.querySelector('.message-image');
+                            if (existingImg) {
+                                existingImg.src = updatedMsg.image_url;
+                            } else {
+                                const newImg = document.createElement('img');
+                                newImg.src = updatedMsg.image_url;
+                                newImg.alt = '留言圖片';
+                                newImg.className = 'message-image';
+                                msgCard.querySelector('.message-bubble').appendChild(newImg);
+                            }
+                            alert('圖片上傳成功！');
+                        }
+                    } catch (error) {
+                        console.error('圖片上傳失敗:', error);
+                        alert('圖片上傳失敗，請稍後重試');
+                    }
+
+                    // 重置輸入框
+                    this.value = '';
+                });
+            });
+
+            // 點讚按鈕事件
+            document.querySelectorAll('.message-like-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const msgId = this.dataset.msgId;
+                    const msgCard = this.closest('.message-card');
+                    const likeCountEl = msgCard.querySelector('.message-like-count');
+                    const likeImg = this.querySelector('img');
+
+                    try {
+                        const response = await fetch(`${API_URL}/${msgId}/like`, {
+                            method: 'POST'
+                        });
+
+                        if (response.ok) {
+                            const updatedMsg = await response.json();
+                            // 更新點讚數（確保後端返回新的讚數）
+                            if (updatedMsg.data) {
+                                likeCountEl.textContent = updatedMsg.data.likes || 0;
+                                // 更新點讚圖示
+                                likeImg.src = './assets/goood_liked.png';
+                            } else {
+                                // 備用方案：手動增加讚數
+                                const currentCount = parseInt(likeCountEl.textContent) || 0;
+                                likeCountEl.textContent = currentCount + 1;
+                                likeImg.src = './assets/goood_liked.png';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('點讚失敗:', error);
+                        alert('點讚失敗，請稍後重試');
+                    }
+                });
+            });
         }
 
         // ==========================================
@@ -579,6 +684,7 @@
         // 非同步函式，可以避免主執行緒被post阻塞
         async function sendMessage() {
             const contentInput = document.getElementById('message-content');
+            const imageInput = document.getElementById('image-upload');
             const content = contentInput.value;
 
             if (!content) {
@@ -586,10 +692,20 @@
                 return;
             }
 
-            // 目前因為 Cloudinary 還沒好，我們先寫死一個假圖片網址
+            let imageUrl = null;
+
+            // 如果有選擇圖片，先上傳到 Cloudinary
+            if (imageInput.files.length > 0) {
+                imageUrl = await uploadToCloudinary(imageInput.files[0]);
+                if (!imageUrl) {
+                    alert('圖片上傳失敗，請稍後重試');
+                    return;
+                }
+            }
+
             const payload = {
                 content: content,
-                image_url: 'https://via.placeholder.com/300x200?text=Lujiao+Image'
+                image_url: imageUrl || null
             };
 
             try {
@@ -601,71 +717,47 @@
 
                 if (response.ok) {
                     contentInput.value = ''; // 清空輸入框
+                    imageInput.value = ''; // 清空圖片選擇
                     fetchMessages(); // 重新整理列表，看到最新留言
                     alert('留言成功！');
                 }
             } catch (error) {
                 console.error('送出留言失敗:', error);
+                alert('留言發送失敗，請稍後重試');
             }
         }
 
-                    // 請填入你從 Cloudinary 拿到的資訊
-            const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dmgkbovcu/image/upload';
-            const UPLOAD_PRESET = 'lujiao_preset';
+        // Cloudinary 設定
+        const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dmgkbovcu/image/upload';
+        const UPLOAD_PRESET = 'lujiao_preset';
 
-            // 【功能：上傳圖片到 Cloudinary】
-            async function uploadToCloudinary(file) {
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('upload_preset', UPLOAD_PRESET);
+        // 【功能：上傳圖片到 Cloudinary】
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
 
-                try {
-                    const response = await fetch(CLOUDINARY_URL, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const data = await response.json();
-                    return data.secure_url; // 這就是 Cloudinary 給我們的圖片永久網址
-                } catch (error) {
-                    console.error('圖片上傳失敗:', error);
-                    return null;
-                }
+            try {
+                const response = await fetch(CLOUDINARY_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                return data.secure_url; // 這就是 Cloudinary 給我們的圖片永久網址
+            } catch (error) {
+                console.error('圖片上傳失敗:', error);
+                return null;
             }
+        }
 
-            // 【功能：整合留言與圖片送出】
-            async function sendMessage() {
-                const content = document.getElementById('message-content').value;
-                const imageFile = document.getElementById('image-upload').files[0];
+        // 綁定表單圖片上傳按鈕
+        document.addEventListener('DOMContentLoaded', () => {
+            const photoBtn = document.querySelector('.comment-photo-btn');
+            const photoInput = document.getElementById('image-upload');
 
-                if (!content) return alert("內容不能空著喔！");
-
-                let imageUrl = ""; // 預設沒有圖片
-
-                // 1. 如果有選圖片，先上傳到 Cloudinary
-                if (imageFile) {
-                    alert("圖片上傳中，請稍候...");
-                    imageUrl = await uploadToCloudinary(imageFile);
-                }
-
-                // 2. 準備要傳給 Node.js 的資料
-                const payload = {
-                    content: content,
-                    image_url: imageUrl // 如果沒傳圖，這就是空字串
-                };
-
-                // 3. 呼叫你原本寫好的 Node.js API
-                try {
-                    const response = await fetch('http://localhost:3000/api/messages', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.ok) {
-                        alert("圖文留言成功！");
-                        location.reload(); // 重新整理看結果
-                    }
-                } catch (error) {
-                    console.error('存入 Supabase 失敗:', error);
-                }
+            if (photoBtn && photoInput) {
+                photoBtn.addEventListener('click', () => {
+                    photoInput.click();
+                });
             }
+        });
