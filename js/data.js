@@ -61,3 +61,6 @@
                 details: `<h3>下鄉古早味烤香腸烤玉米</h3><p><strong>地址：</strong><a href="https://maps.app.goo.gl/1sPnvknAbUbAdT1XA" target="_blank" style="color: var(--color-primary); text-decoration: none;">嘉義縣六腳鄉蒜頭村94號</a></p><p><strong>營業時間：</strong>不定時</p><h3>傳承的醬香</h3><p>經過炭火的慢烤，外層微焦、內層飽滿多汁，配上獨門醬汁反覆刷烤，香味四溢，讓人一聞就停下腳步。</p><h3>不只是點心</h3><p>一支烤玉米，不只是點心，更承載著六腳鄉的生活節奏與人情溫度。</p>`
             }
         };
+
+
+// --- 動畫數據 ---

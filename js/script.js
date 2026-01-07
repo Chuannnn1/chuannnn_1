@@ -465,3 +465,81 @@
             document.body.appendChild(script);
             if (typeof closeSidebar === "function") { closeSidebar(); }
         }
+        
+        // ==========================================
+
+
+        // 留言板功能 (與後端 API 溝通)
+
+        // 1. 設定後端 API 的基地台網址
+        const API_URL = 'http://localhost:3000/api/messages';
+
+        // 2. 當網頁載入完成後，立刻執行抓取留言的動作
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMessages();
+        });
+
+        // ==========================================
+        // 模組一：抓取並顯示留言 (GET)
+        // ==========================================
+        async function fetchMessages() {
+            try {
+                const response = await fetch(API_URL);
+                const messages = await response.json();
+
+                const messageList = document.getElementById('message-list');
+                messageList.innerHTML = ''; // 先清空舊內容
+
+                messages.forEach(msg => {
+                    // 建立留言卡片的 HTML 結構
+                    const card = `
+                        <div class="message-card">
+                            <img src="${msg.image_url || 'https://via.placeholder.com/150'}" alt="留言圖片">
+                            <div class="content">
+                                <p>${msg.content}</p>
+                                <small>${new Date(msg.created_at).toLocaleString()}</small>
+                            </div>
+                        </div>
+                    `;
+                    messageList.innerHTML += card;
+                });
+            } catch (error) {
+                console.error('抓取留言失敗:', error);
+            }
+        }
+
+        // ==========================================
+        // 模組二：傳送新留言 (POST)
+        // ==========================================
+        // 非同步函式，可以避免主執行緒被post阻塞
+        async function sendMessage() {
+            const contentInput = document.getElementById('message-content');
+            const content = contentInput.value;
+
+            if (!content) {
+                alert('請輸入留言內容！');
+                return;
+            }
+
+            // 目前因為 Cloudinary 還沒好，我們先寫死一個假圖片網址
+            const payload = {
+                content: content,
+                image_url: 'https://via.placeholder.com/300x200?text=Lujiao+Image'
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    contentInput.value = ''; // 清空輸入框
+                    fetchMessages(); // 重新整理列表，看到最新留言
+                    alert('留言成功！');
+                }
+            } catch (error) {
+                console.error('送出留言失敗:', error);
+            }
+        }
