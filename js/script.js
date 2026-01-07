@@ -545,14 +545,23 @@
                 const messageList = document.getElementById('message-list');
                 messageList.innerHTML = ''; // 先清空舊內容
 
+                if (messages.length === 0) {
+                    messageList.innerHTML = '<p style="text-align: center; color: #999; padding: 30px;">還沒有留言，快來分享你的故事吧！</p>';
+                    return;
+                }
+
                 messages.forEach(msg => {
-                    // 建立留言卡片的 HTML 結構
+                    // 建立留言卡片的 HTML 結構（對話氣泡風格）
+                    const messageTime = new Date(msg.created_at).toLocaleString('zh-TW');
+                    const imageHtml = msg.image_url ? `<img src="${msg.image_url}" alt="留言圖片" class="message-image">` : '';
+                    
                     const card = `
                         <div class="message-card">
-                            <img src="${msg.image_url || 'https://via.placeholder.com/150'}" alt="留言圖片">
-                            <div class="content">
-                                <p>${msg.content}</p>
-                                <small>${new Date(msg.created_at).toLocaleString()}</small>
+                            <img src="./assets/MascotWithBG.jpeg" alt="蒜頭小醬" class="mascot-avatar">
+                            <div class="message-bubble">
+                                <p class="message-content">${msg.content}</p>
+                                ${imageHtml}
+                                <div class="message-time">${messageTime}</div>
                             </div>
                         </div>
                     `;
@@ -560,6 +569,7 @@
                 });
             } catch (error) {
                 console.error('抓取留言失敗:', error);
+                document.getElementById('message-list').innerHTML = '<p style="text-align: center; color: #999; padding: 30px;">留言加載失敗，請稍後重試</p>';
             }
         }
 
