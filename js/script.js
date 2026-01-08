@@ -577,7 +577,10 @@
                     const messageTime = new Date(msg.created_at).toLocaleString('zh-TW');
                     const imageHtml = msg.image_url ? `<img src="${msg.image_url}" alt="留言圖片" class="message-image">` : '';
                     const likeCount = msg.likes || 0;
-                    const isLiked = msg.is_liked || false;
+                    
+                    // 檢查 localStorage 中是否已按讚過此留言
+                    const likeKey = `liked_message_${msg.id}`;
+                    const isLiked = localStorage.getItem(likeKey) === 'true';
                     const likeIconSrc = isLiked ? './assets/goood_liked.png' : './assets/Goood_like_yet.png';
                     
                     const card = `
@@ -673,23 +676,35 @@
                     const likeCountEl = msgCard.querySelector('.message-like-count');
                     const likeImg = this.querySelector('img');
 
+                    // 檢查本地 localStorage 中是否已按讚過此留言
+                    const likeKey = `liked_message_${msgId}`;
+                    const isAlreadyLiked = localStorage.getItem(likeKey) === 'true';
+                    
+                    // 決定執行的動作：已按讚就執行 'remove'，未按讚就執行 'add'
+                    const action = isAlreadyLiked ? 'remove' : 'add';
+
                     try {
                         const response = await fetch(`${API_URL}/${msgId}/like`, {
-                            method: 'POST'
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action })
                         });
 
                         if (response.ok) {
-                            const updatedMsg = await response.json();
-                            // 更新點讚數（確保後端返回新的讚數）
-                            if (updatedMsg.data) {
-                                likeCountEl.textContent = updatedMsg.data.likes || 0;
-                                // 更新點讚圖示
+                            const result = await response.json();
+                            
+                            // 更新點讚數
+                            likeCountEl.textContent = result.newLikes || 0;
+                            
+                            // 切換按讚狀態
+                            if (action === 'add') {
+                                // 第一次按讚
+                                localStorage.setItem(likeKey, 'true');
                                 likeImg.src = './assets/goood_liked.png';
                             } else {
-                                // 備用方案：手動增加讚數
-                                const currentCount = parseInt(likeCountEl.textContent) || 0;
-                                likeCountEl.textContent = currentCount + 1;
-                                likeImg.src = './assets/goood_liked.png';
+                                // 取消按讚
+                                localStorage.removeItem(likeKey);
+                                likeImg.src = './assets/Goood_like_yet.png';
                             }
                         }
                     } catch (error) {
