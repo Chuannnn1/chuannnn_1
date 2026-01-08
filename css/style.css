@@ -828,3 +828,72 @@
             min-width: 20px;
             text-align: center;
         }
+
+        /* 飄浮吉祥物與天氣泡泡 */
+        #floating-mascot {
+            position: fixed;
+            left: calc(var(--sidebar-width) + 18px);
+            bottom: 32px;
+            display: none;
+            align-items: flex-end;
+            gap: 12px;
+            z-index: 12000;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            flex-direction: row-reverse;
+        }
+
+        #floating-mascot.show { display: flex; }
+        #floating-mascot.dragging { cursor: grabbing; }
+
+        .mascot-bubble {
+            background: rgba(255, 253, 245, 0.96);
+            border: 2px solid var(--color-primary);
+            border-radius: 12px;
+            padding: 12px 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            position: relative;
+            min-width: 190px;
+        }
+
+        .mascot-bubble::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            bottom: 20px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 12px solid var(--color-primary);
+        }
+
+        .bubble-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--color-primary);
+            margin-bottom: 6px;
+        }
+
+        .bubble-weather { display: flex; align-items: center; gap: 10px; }
+        .bubble-weather i { font-size: 26px; }
+        .bubble-text { display: flex; flex-direction: column; gap: 4px; }
+        .bubble-meta { display: flex; gap: 10px; font-size: 0.9rem; color: #666; }
+
+        .mascot-floating-img {
+            width: 92px;
+            height: 92px;
+            border-radius: 14px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+            pointer-events: none;
+            transform: scaleX(-1);
+        }
+
+        @media screen and (max-width: 768px) {
+            #floating-mascot { left: 16px; bottom: 18px; gap: 10px; }
+            .mascot-floating-img { width: 76px; height: 76px; }
+            .mascot-bubble { min-width: 160px; padding: 10px 12px; }
+            .bubble-title { font-size: 0.9rem; }
+            .bubble-meta { font-size: 0.85rem; }
+        }

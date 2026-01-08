@@ -11,7 +11,38 @@
                 renderWeatherToPage(weatherDesc, temp, pop);
             } catch (error) {
                 console.error("氣象資料抓取失敗:", error);
-                document.getElementById('w-desc').innerText = "連線失敗";
+                const descEl = document.getElementById('w-desc');
+                if (descEl) { descEl.innerText = "連線失敗"; }
+            }
+        }
+
+        function getWeatherVisual(desc = '') {
+            if (desc.includes("雨")) {
+                return { iconClass: "fas fa-cloud-showers-heavy", color: "#8DA399" };
+            }
+            if (desc.includes("雲")) {
+                return { iconClass: "fas fa-cloud-sun", color: "#D8D3C5" };
+            }
+            return { iconClass: "fas fa-sun", color: "#C67C6D" };
+        }
+
+        function updateMascotWeather(desc, temp, rain) {
+            const mascot = document.getElementById('floating-mascot');
+            if (!mascot) return;
+
+            const descEl = document.getElementById('mascot-w-desc');
+            const tempEl = document.getElementById('mascot-w-temp');
+            const rainEl = document.getElementById('mascot-w-rain');
+            const iconEl = document.getElementById('mascot-w-icon');
+            const rainVal = rain === "-" ? "0" : rain;
+
+            if (descEl) descEl.innerText = desc;
+            if (tempEl) tempEl.innerText = temp + "°C";
+            if (rainEl) rainEl.innerText = "降雨 " + rainVal + "%";
+            if (iconEl) {
+                const visual = getWeatherVisual(desc);
+                iconEl.className = visual.iconClass;
+                iconEl.style.color = visual.color;
             }
         }
 
@@ -20,19 +51,18 @@
             const tempEl = document.getElementById('w-temp');
             const rainEl = document.getElementById('w-rain');
             const iconEl = document.getElementById('w-icon');
-            descEl.innerText = desc;
-            tempEl.innerText = temp + "°C";
-            rainEl.innerText = "降雨機率：" + (rain === "-" ? "0" : rain) + "%";
-            if (desc.includes("雨")) {
-                iconEl.className = "fas fa-cloud-showers-heavy";
-                iconEl.style.color = "#8DA399";
-            } else if (desc.includes("雲")) {
-                iconEl.className = "fas fa-cloud-sun";
-                iconEl.style.color = "#D8D3C5";
-            } else {
-                iconEl.className = "fas fa-sun";
-                iconEl.style.color = "#C67C6D";
+            const rainVal = rain === "-" ? "0" : rain;
+
+            if (descEl) descEl.innerText = desc;
+            if (tempEl) tempEl.innerText = temp + "°C";
+            if (rainEl) rainEl.innerText = "降雨機率：" + rainVal + "%";
+            if (iconEl) {
+                const visual = getWeatherVisual(desc);
+                iconEl.className = visual.iconClass;
+                iconEl.style.color = visual.color;
             }
+
+            updateMascotWeather(desc, temp, rainVal);
         }
 
         // --- 核心邏輯 ---
@@ -66,6 +96,16 @@
         });
         window.addEventListener('resize', updatePrevButtonPosition);
 
+        document.addEventListener('DOMContentLoaded', () => {
+            initFloatingMascot();
+            updateMascotVisibility('page-home');
+            const mascot = document.getElementById('floating-mascot');
+            if (mascot) {
+                requestAnimationFrame(() => keepMascotInView(mascot));
+            }
+            updateSix腳Weather();
+        });
+
         // 點擊瀏覽器區域（除了導航列外）時關閉側邊欄
         document.addEventListener('click', (e) => {
             const sidebar = document.getElementById('sidebar');
@@ -94,6 +134,18 @@
         function toggleSubmenu() {
             const submenu = document.getElementById("submenu");
             submenu.style.display = (submenu.style.display === "block") ? "none" : "block";
+        }
+
+        const mascotVisiblePages = ['page-home', 'page-spot-detail', 'page-intro', 'page-recommend'];
+
+        function updateMascotVisibility(pageId) {
+            const mascot = document.getElementById('floating-mascot');
+            if (!mascot) return;
+            if (mascotVisiblePages.includes(pageId)) {
+                mascot.classList.add('show');
+            } else {
+                mascot.classList.remove('show');
+            }
         }
 
         function navigateTo(pageId) {
@@ -138,6 +190,7 @@
             if (target) {
                 target.style.display = (pageId === 'page-home') ? 'flex' : 'block';
             }
+            updateMascotVisibility(pageId);
             closeSidebar(); 
             window.scrollTo(0, 0);
         }
@@ -597,6 +650,86 @@
         function goToCurrentSpot() {
             const currentSlide = slides[current];
             navigateToSpot(currentSlide.title, currentSlide.img);
+        }
+
+        function getMascotMinLeft() {
+            const root = document.documentElement;
+            const sidebarWidthStr = getComputedStyle(root).getPropertyValue('--sidebar-width').trim();
+            const sidebarWidth = parseInt(sidebarWidthStr, 10) || 0;
+            return window.innerWidth > 1024 ? sidebarWidth + 12 : 8;
+        }
+
+        function keepMascotInView(mascot) {
+            const rect = mascot.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) { return; }
+            let left = rect.left;
+            let top = rect.top;
+            const minLeft = getMascotMinLeft();
+            const maxLeft = window.innerWidth - mascot.offsetWidth - 8;
+            const maxTop = window.innerHeight - mascot.offsetHeight - 8;
+            left = Math.min(Math.max(minLeft, left), maxLeft);
+            top = Math.min(Math.max(8, top), maxTop);
+            mascot.style.left = `${left}px`;
+            mascot.style.top = `${top}px`;
+            mascot.style.right = 'auto';
+            mascot.style.bottom = 'auto';
+        }
+
+        function initFloatingMascot() {
+            const mascot = document.getElementById('floating-mascot');
+            if (!mascot) return;
+
+            let isDragging = false;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            const getPoint = (e) => {
+                if (e.touches && e.touches.length) {
+                    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+                return { x: e.clientX, y: e.clientY };
+            };
+
+            const startDrag = (e) => {
+                const point = getPoint(e);
+                isDragging = true;
+                mascot.classList.add('dragging');
+                const rect = mascot.getBoundingClientRect();
+                offsetX = point.x - rect.left;
+                offsetY = point.y - rect.top;
+            };
+
+            const onDrag = (e) => {
+                if (!isDragging) return;
+                if (e.cancelable) { e.preventDefault(); }
+                const point = getPoint(e);
+                let left = point.x - offsetX;
+                let top = point.y - offsetY;
+                const minLeft = getMascotMinLeft();
+                const maxLeft = window.innerWidth - mascot.offsetWidth - 8;
+                const maxTop = window.innerHeight - mascot.offsetHeight - 8;
+                left = Math.min(Math.max(minLeft, left), maxLeft);
+                top = Math.min(Math.max(8, top), maxTop);
+                mascot.style.left = `${left}px`;
+                mascot.style.top = `${top}px`;
+                mascot.style.right = 'auto';
+                mascot.style.bottom = 'auto';
+            };
+
+            const endDrag = () => {
+                isDragging = false;
+                mascot.classList.remove('dragging');
+            };
+
+            mascot.addEventListener('mousedown', startDrag);
+            mascot.addEventListener('touchstart', startDrag, { passive: true });
+            window.addEventListener('mousemove', onDrag, { passive: false });
+            window.addEventListener('touchmove', onDrag, { passive: false });
+            window.addEventListener('mouseup', endDrag);
+            window.addEventListener('touchend', endDrag);
+            window.addEventListener('resize', () => keepMascotInView(mascot));
+
+            keepMascotInView(mascot);
         }
 
         // --- 桌寵 ---
