@@ -549,6 +549,7 @@
         // 留言板功能 (與後端 API 溝通)
 
         // 1. 設定後端 API 的基地台網址
+        
         const API_URL = 'https://lujiao-messaging-board.onrender.com/api/messages';
 
         // 2. 當網頁載入完成後，立刻執行抓取留言的動作
@@ -690,9 +691,9 @@
                             body: JSON.stringify({ action })
                         });
 
-                        if (response.ok) {
-                            const result = await response.json();
-                            
+                        const result = await response.json();
+                        
+                        if (response.ok && result.success) {
                             // 更新點讚數
                             likeCountEl.textContent = result.newLikes || 0;
                             
@@ -706,10 +707,12 @@
                                 localStorage.removeItem(likeKey);
                                 likeImg.src = './assets/Goood_like_yet.png';
                             }
+                        } else {
+                            throw new Error(result.error || '更新失敗');
                         }
                     } catch (error) {
                         console.error('點讚失敗:', error);
-                        alert('點讚失敗，請稍後重試');
+                        alert('點讚失敗，請稍後重試\n錯誤: ' + error.message);
                     }
                 });
             });
