@@ -672,10 +672,17 @@
             // 點讚按鈕事件
             document.querySelectorAll('.message-like-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
+                    // 防止重複點擊：如果按鈕已經被禁用，直接返回
+                    if (this.disabled) {
+                        console.warn('按讚請求已在進行中，請稍候...');
+                        return;
+                    }
+
                     const msgId = this.dataset.msgId;
                     const msgCard = this.closest('.message-card');
                     const likeCountEl = msgCard.querySelector('.message-like-count');
                     const likeImg = this.querySelector('img');
+                    const likeBtn = this; // 保存按鈕引用
 
                     // 檢查本地 localStorage 中是否已按讚過此留言
                     const likeKey = `liked_message_${msgId}`;
@@ -683,6 +690,11 @@
                     
                     // 決定執行的動作：已按讚就執行 'remove'，未按讚就執行 'add'
                     const action = isAlreadyLiked ? 'remove' : 'add';
+
+                    // 【凍結按鈕】禁用按鈕，防止重複點擊
+                    likeBtn.disabled = true;
+                    likeBtn.style.opacity = '0.5';
+                    likeBtn.style.cursor = 'not-allowed';
 
                     try {
                         const response = await fetch(`${API_URL}/${msgId}/like`, {
@@ -692,6 +704,7 @@
                         });
 
                         const result = await response.json();
+                        console.log(`點讚操作: ${action}, 結果:`, result);
                         
                         if (response.ok && result.success) {
                             // 更新點讚數
@@ -701,11 +714,21 @@
                             if (action === 'add') {
                                 // 第一次按讚
                                 localStorage.setItem(likeKey, 'true');
-                                likeImg.src = './assets/goood_liked.png';
+                                if (likeImg) {
+                                    likeImg.src = './assets/goood_liked.png';
+                                    console.log('圖片已更新為: goood_liked.png');
+                                } else {
+                                    console.warn('找不到按讚圖片元素');
+                                }
                             } else {
                                 // 取消按讚
                                 localStorage.removeItem(likeKey);
-                                likeImg.src = './assets/Goood_like_yet.png';
+                                if (likeImg) {
+                                    likeImg.src = './assets/Goood_like_yet.png';
+                                    console.log('圖片已更新為: Goood_like_yet.png');
+                                } else {
+                                    console.warn('找不到按讚圖片元素');
+                                }
                             }
                         } else {
                             throw new Error(result.error || '更新失敗');
@@ -713,6 +736,11 @@
                     } catch (error) {
                         console.error('點讚失敗:', error);
                         alert('點讚失敗，請稍後重試\n錯誤: ' + error.message);
+                    } finally {
+                        // 【解凍按鈕】請求完成後（無論成功或失敗），恢復按鈕狀態
+                        likeBtn.disabled = false;
+                        likeBtn.style.opacity = '1';
+                        likeBtn.style.cursor = 'pointer';
                     }
                 });
             });
