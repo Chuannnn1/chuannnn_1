@@ -127,6 +127,13 @@
             if (pageId === 'page-weather') {
                 updateSix腳Weather(); 
             }
+            if (pageId === 'page-about') {
+                // 改變背景為 we.jpg
+                document.getElementById('bg-slider').style.backgroundImage = "url('./assets/we.jpg')";
+                document.getElementById('bg-slider').style.backgroundPosition = 'center';
+                // 初始化雙擊事件監聽器
+                initAboutImageDoubleClick();
+            }
             const target = document.getElementById(pageId);
             if (target) {
                 target.style.display = (pageId === 'page-home') ? 'flex' : 'block';
@@ -268,6 +275,115 @@
                 toggleItem.appendChild(content);
                 detailsContainer.appendChild(toggleItem);
             });
+        }
+
+        // 【關於我們頁面】初始化圖片雙擊打開 YouTube 播放器
+        function initAboutImageDoubleClick() {
+            const aboutImg = document.getElementById('about-img');
+            if (!aboutImg) return;
+
+            aboutImg.addEventListener('dblclick', function() {
+                openYouTubePlayer();
+            });
+        }
+
+        // 打開 YouTube 網頁內嵌播放器
+        function openYouTubePlayer() {
+            const youtubeUrl = 'https://youtu.be/Z1uQ9CIK5BM?si=X81eokGcH0l1PXTR';
+            // 轉換為嵌入式網址
+            const videoId = 'Z1uQ9CIK5BM';
+            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
+            // 建立模態視窗
+            const modal = document.createElement('div');
+            modal.id = 'youtube-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
+
+            // 建立播放器容器
+            const playerContainer = document.createElement('div');
+            playerContainer.style.cssText = `
+                width: 90%;
+                max-width: 800px;
+                background-color: white;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                position: relative;
+            `;
+
+            // 建立關閉按鈕
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background-color: #ff6b6b;
+                color: white;
+                border: none;
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 18px;
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            closeBtn.addEventListener('mouseover', () => {
+                closeBtn.style.backgroundColor = '#ff5252';
+            });
+            closeBtn.addEventListener('mouseout', () => {
+                closeBtn.style.backgroundColor = '#ff6b6b';
+            });
+            closeBtn.addEventListener('click', () => {
+                modal.remove();
+            });
+
+            // 建立 iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = embedUrl;
+            iframe.style.cssText = `
+                width: 100%;
+                height: 450px;
+                border: none;
+            `;
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+
+            // 組合 DOM
+            playerContainer.appendChild(closeBtn);
+            playerContainer.appendChild(iframe);
+            modal.appendChild(playerContainer);
+            document.body.appendChild(modal);
+
+            // 點擊背景區域關閉
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+
+            // 按下 ESC 鍵關閉
+            const closeOnEsc = (e) => {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.removeEventListener('keydown', closeOnEsc);
+                }
+            };
+            document.addEventListener('keydown', closeOnEsc);
         }
 
 

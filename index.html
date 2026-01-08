@@ -245,13 +245,87 @@
         </div>
 
         <div id="page-about" class="page-section">
-            <div class="content-card">
-                <h1>關於我們</h1>
-                <div style="margin: 20px 0; text-align: center;">
-                    <img src="./assets/we.jpg" alt="關於我們" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
-                    <img src="./assets/we2.jpg" alt="關於我們2" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+            <div class="content-card about-card">
+                <h1 style="text-align: center; font-size: 2.5rem; margin-bottom: 10px;">關於我們</h1>
+                <p style="text-align: center; color: #666; font-size: 1rem; margin-bottom: 40px;">由嘉義大學資訊管理學系六腳小組製作</p>
+                
+                <!-- 主要內容區域：使用絕對定位 -->
+                <div style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; min-height: 450px;">
+                    
+                    <!-- 左側 Mascot 和對話框 -->
+                    <div style="position: absolute; left: -40px; bottom: 20px; display: flex; flex-direction: column; align-items: center; width: 100px; z-index: 5;">
+                        <!-- 對話框 -->
+                        <div style="
+                            background-color: #FFF3CD;
+                            border: 2px solid var(--color-primary);
+                            border-radius: 12px;
+                            padding: 8px 12px;
+                            position: relative;
+                            text-align: center;
+                            font-size: 0.75rem;
+                            color: #333;
+                            font-weight: 500;
+                            width: 100px;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                            margin-bottom: 5px;
+                            line-height: 1.3;
+                        ">
+                            點兩下來看看我們的六腳遊
+                            <!-- 對話框尾巴 -->
+                            <div style="
+                                position: absolute;
+                                bottom: -8px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                width: 0;
+                                height: 0;
+                                border-left: 8px solid transparent;
+                                border-right: 8px solid transparent;
+                                border-top: 8px solid var(--color-primary);
+                            "></div>
+                        </div>
+                        <!-- Mascot 圖片 -->
+                        <img 
+                            src="./assets/Mascot.png" 
+                            alt="蒜頭小醬" 
+                            style="width: 80px; height: 80px; border-radius: 8px;"
+                        >
+                    </div>
+
+                    <!-- 中央置中圖片 -->
+                    <div style="display: flex; justify-content: center; align-items: center; z-index: 10;">
+                        <img 
+                            id="about-img" 
+                            src="./assets/we.jpg" 
+                            alt="關於我們" 
+                            style="max-width: 600px; width: 100%; height: auto; border-radius: 8px; cursor: pointer; user-select: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block;" 
+                            title="雙擊打開 YouTube 播放器"
+                            onerror="console.error('we.jpg 載入失敗')"
+                        >
+                    </div>
                 </div>
-                <p>由嘉義大學資訊管理學系六腳小組製作。</p>
+
+                <!-- 聯絡資訊區域：垂直布局，聯絡我們在上，地址在下 -->
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 30px;">
+                    <!-- 聯絡我們（藍色位置） -->
+                    <div>
+                        <p style="margin: 10px 0; font-size: 0.95rem; color: #333;">
+                            <i class="fas fa-envelope" style="margin-right: 8px; color: var(--color-primary);"></i>
+                            <a href="mailto:s1134552@g.ncyu.edu.tw" style="color: var(--color-primary); text-decoration: none; font-weight: 500;">
+                                聯絡我們
+                            </a>
+                        </p>
+                    </div>
+                    <!-- 地址（黃色位置） -->
+                    <div>
+                        <p style="margin: 10px 0; font-size: 0.95rem; color: #333;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 8px; color: var(--color-primary);"></i>
+                            <a href="https://maps.app.goo.gl/AgLbSnDmitWkqzt29" target="_blank" style="color: var(--color-primary); text-decoration: none;">
+                                地址: (600)嘉義市新民路580號A棟3樓
+                            </a>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
