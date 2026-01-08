@@ -49,6 +49,15 @@
     heartsContainer.style.left = '0';
     document.body.appendChild(heartsContainer);
 
+    // 暴露清理接口
+    window.cleanupPetHearts = function() {
+        heartsContainer.innerHTML = '';
+        heartEffectTimeoutId = null;
+        shouldCreateHearts = false;
+    };
+    let heartEffectTimeoutId = null;
+    let shouldCreateHearts = true;
+
     // 运动
     let lastUpdateTime = Date.now();
     let currentX = Math.random() * window.innerWidth;
@@ -189,7 +198,7 @@
 
         setTimeout(() => {
 
-            if (!isFrezeeMode) return;
+            if (!isFrezeeMode || !shouldCreateHearts) return;
 
             const heart = document.createElement('div');
             heart.innerHTML = '❤️';
@@ -220,7 +229,9 @@
                 const progress = elapsed / duration;
 
                 if (progress >= 1) {
-                    heartsContainer.removeChild(heart);
+                    if (heart.parentNode) {
+                        heartsContainer.removeChild(heart);
+                    }
                     return;
                 }
 

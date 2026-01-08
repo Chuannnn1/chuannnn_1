@@ -738,6 +738,11 @@
         function spawnPet() {
             const petBtn = document.getElementById('pet-btn');
             if (petLoaded) {
+                // 清理愛心效果
+                if (typeof window.cleanupPetHearts === 'function') {
+                    window.cleanupPetHearts();
+                }
+                
                 petElements.forEach(el => {
                     if (el && el.parentNode) {
                         el.style.transition = 'opacity 0.5s';
@@ -757,6 +762,8 @@
                     const allDivs = document.querySelectorAll('div[style*="pointerEvents"]');
                     allDivs.forEach(div => {
                         if (div.style.zIndex === '9998' && div.style.position === 'fixed') {
+                            // 清理愛心動畫
+                            div.innerHTML = '';
                             div.style.opacity = '0';
                             div.style.transition = 'opacity 0.3s';
                             setTimeout(() => div.remove(), 300);

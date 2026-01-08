@@ -848,7 +848,7 @@
         #floating-mascot.dragging { cursor: grabbing; }
 
         .mascot-bubble {
-            background: rgba(255, 253, 245, 0.96);
+            background: #fffdf5;
             border: 2px solid var(--color-primary);
             border-radius: 12px;
             padding: 12px 14px;
