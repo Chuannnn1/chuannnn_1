@@ -19,7 +19,7 @@
                 mainImg: './assets/tofup00.jpg',
                 gallery: ['./assets/tofup00.jpg', './assets/tofup01.jpg', './assets/tofup02.jpg', './assets/tofup03.jpg'],
                 description: '隱身田野間的特色豆花店，使用在地食材製作的古早味豆花。',
-                details: `<h3>基本資訊</h3><p><strong>地址：</strong><a href="https://maps.app.goo.gl/Pw6j7jdt2D8VYuwi8" target="_blank" style="color: var(--color-primary); text-decoration: none;">嘉義縣六腳鄉南宮路32號</a></p><p><strong>營業時間：</strong>週一、三、四、五 12:00～17:30，週末 09:30～18:00（週二公休）</p><p><strong>推薦品項：</strong>招牌豆花、綠豆湯、花生湯</p><h3>旅程的完美句點</h3><p>旅行的尾聲，最適合用一碗冰涼、綿密的甜點來做結尾。位於六家佃長壽橋旁的古早味，是在地人大推的隱藏版美食。</p><h3>真材實料的堅持</h3><p>這裡沒有浮誇的裝飾，靠的是真材實料。老闆堅持使用優質黃豆，遵循古法製作，豆花吃起來綿密細緻，帶著濃厚的豆香味。</p><h3>品嚐方式</h3><p>配上熬煮到軟爛的花生或紅豆，又或是搭配上Q彈的粉圓，再淋上一杓特製的糖水，甜而不膩，溫潤入心。這份簡單的甜，正是六腳鄉生活美學的最佳寫照。</p>`
+                details: `<h3>基本資訊</h3><p><strong>地址：</strong><a href="https://maps.app.goo.gl/Pw6j7jdt2D8VYuwi8" target="_blank" style="color: var(--color-primary); text-decoration: none;">嘉義縣六腳鄉南宮路32號</a></p><p><strong>營業時間：</strong>週一、三、四、五 12:00～17:30，週末 09:30～18:00（週二公休）</p><p><strong>推薦品項：</strong>招牌豆花、紅豆豆花、粉圓豆花、冬瓜茶</p><h3>旅程的完美句點</h3><p>旅行的尾聲，最適合用一碗冰涼、綿密的甜點來做結尾。位於六家佃長壽橋旁的古早味，是在地人大推的隱藏版美食。</p><h3>真材實料的堅持</h3><p>這裡沒有浮誇的裝飾，靠的是真材實料。老闆堅持使用優質黃豆，遵循古法製作，豆花吃起來綿密細緻，帶著濃厚的豆香味。</p><h3>品嚐方式</h3><p>配上熬煮到軟爛的紅豆，又或是搭配上Q彈的粉圓，再淋上幾杓不死甜的豆漿，甜而不膩，溫潤入心。這份簡單的甜，正是六腳鄉生活美學的最佳寫照。</p>`
             },
             '配天宮': {
                 mainImg: './assets/ptg00.jpg',
